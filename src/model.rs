@@ -5,8 +5,8 @@ use crate::loss_functions::mse::MSE;
 use crate::neural_network::activations::activation::Activation;
 use crate::neural_network::activations::leaky_relu::LeakyRelu;
 use crate::neural_network::activations::sigmoid::Sigmoid;
-use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::layers::layer::Layer;
+use crate::neural_network::layers::dense::Dense;
 
 pub struct Model {
     hidden_layer_1: Dense,
@@ -37,17 +37,17 @@ impl Model {
         }
     }
 
-    pub fn infer(&self, input: &ArrayView1<f32>) -> Array1<f32> {
+    pub fn infer(&self, input: ArrayView1<f32>) -> Array1<f32> {
         let mut next_input;
 
         next_input = self.hidden_layer_1.infer(input);
-        next_input = self.leaky_relu.forward(&next_input.view());
+        next_input = self.leaky_relu.forward(next_input);
 
-        next_input = self.hidden_layer_2.infer(&next_input.view());
-        next_input = self.leaky_relu.forward(&next_input.view());
+        next_input = self.hidden_layer_2.infer(next_input);
+        next_input = self.leaky_relu.forward(next_input);
 
-        next_input = self.output_layer.infer(&next_input.view());
-        self.sigmoid.forward(&next_input.view())
+        next_input = self.output_layer.infer(next_input);
+        self.sigmoid.forward(next_input)
     }
 
     pub fn train(&self, training_data: &ArrayView3<f32>, epochs: u32) {
@@ -58,9 +58,9 @@ impl Model {
                 let training_input = training_sample.row(0);
                 let output_truth = training_sample.row(1);
 
-                let output_prediction = self.infer(&training_input);
+                let output_prediction = self.infer(training_input);
 
-                let loss = self.loss_fn.forward(&output_prediction.view(), &output_truth);
+                let loss = self.loss_fn.forward(output_prediction, output_truth.to_owned());
                 // losses.push(loss);
 
                 // backprop

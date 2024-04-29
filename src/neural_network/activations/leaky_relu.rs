@@ -1,5 +1,6 @@
-use ndarray::{Array1, ArrayView1};
+use ndarray::{Array, ArrayBase, Data, Dimension};
 use crate::neural_network::activations::activation::Activation;
+use crate::neural_network::neural_module::NeuralModule;
 
 pub struct LeakyRelu {
     negative_slope: f32,
@@ -13,11 +14,30 @@ impl LeakyRelu {
     }
 }
 
-impl Activation for LeakyRelu {
-    fn forward(&self, z: &ArrayView1<f32>) -> Array1<f32> {
-        z.mapv(|z| f32::max(&self.negative_slope * z, z))
+impl NeuralModule for LeakyRelu {
+    fn trainable(&self) -> bool {
+        false
     }
-    fn backward(&self, z: &ArrayView1<f32>) -> Array1<f32> {
-        z.mapv(|z| if z > 0f32 { 1f32 } else { self.negative_slope })
+}
+
+impl<S, D> Activation<S, D> for LeakyRelu
+where
+    S: Data<Elem = f32>,
+    D: Dimension,
+{
+    fn forward(&self, z: ArrayBase<S, D>) -> Array<f32, D>
+    where
+        S: Data<Elem = f32>,
+        D: Dimension,
+    {
+        z.mapv(|el| f32::max(el, el * self.negative_slope))
+    }
+
+    fn backward(&self, z: ArrayBase<S, D>) -> Array<f32, D>
+    where
+        S: Data<Elem = f32>,
+        D: Dimension,
+    {
+        z.mapv(|el| if el > 0f32 { 1f32 } else { self.negative_slope })
     }
 }

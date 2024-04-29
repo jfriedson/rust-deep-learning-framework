@@ -21,7 +21,7 @@ fn main() {
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);
-        let output = neural_net.infer(&input.view());
+        let output = neural_net.infer(input);
         println!("{:?}", output);
     }
 }

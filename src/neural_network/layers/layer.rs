@@ -1,6 +1,10 @@
-use ndarray::{Array1, ArrayView1};
+use ndarray::{Array, Array1, ArrayBase, Data, Dimension, Ix1};
 
-pub trait Layer {
-    fn new(input_count: usize, output_count: usize) -> Self;
-    fn infer(&self, input: &ArrayView1<f32>) -> Array1<f32>;
+pub trait Layer<S>
+where
+    S: Data<Elem = f32>,
+{
+    fn infer(&self, input: ArrayBase<S, Ix1>) -> Array1<f32>
+    where
+        S: Data<Elem = f32>;
 }

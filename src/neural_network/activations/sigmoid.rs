@@ -1,5 +1,6 @@
-use ndarray::{Array1, ArrayView1};
+use ndarray::{Array, ArrayBase, Data, Dimension};
 use crate::neural_network::activations::activation::Activation;
+use crate::neural_network::neural_module::NeuralModule;
 
 pub struct Sigmoid {
 }
@@ -11,14 +12,24 @@ impl Sigmoid {
     }
 }
 
-impl Activation for Sigmoid {
-    fn forward(&self, z: &ArrayView1<f32>) -> Array1<f32> {
-        z.mapv(|z| 1f32/(1f32 + z.exp()))
+impl NeuralModule for Sigmoid {
+    fn trainable(&self) -> bool {
+        false
     }
-    fn backward(&self, z: &ArrayView1<f32>) -> Array1<f32> {
+}
+
+impl<S, D> Activation<S, D> for Sigmoid
+where
+    S: Data<Elem = f32>,
+    D: Dimension,
+{
+    fn forward(&self, z: ArrayBase<S, D>) -> Array<f32, D> {
+        z.mapv(|el| 1f32/(1f32 + (-el).exp()))
+    }
+    fn backward(&self, z: ArrayBase<S, D>) -> Array<f32, D> {
         let mut sigmoid = self.forward(z);
 
-        sigmoid.mapv_inplace(|z| z * (1f32 - z));
+        sigmoid.mapv_inplace(|el| el * (1f32 - el));
 
         sigmoid
     }
