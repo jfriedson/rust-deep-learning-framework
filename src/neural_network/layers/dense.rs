@@ -1,6 +1,4 @@
-use std::ops::Add;
-use ndarray::{Array, Array1, Array2, ArrayBase, Data, Dim, Dimension, Ix1, Ix2, OwnedRepr};
-use ndarray::linalg::Dot;
+use ndarray::{Array1, Array2, ArrayBase, Data, Ix1};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 use crate::neural_network::layers::layer::Layer;

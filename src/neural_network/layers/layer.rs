@@ -1,4 +1,4 @@
-use ndarray::{Array, Array1, ArrayBase, Data, Dimension, Ix1};
+use ndarray::{Array1, ArrayBase, Data, Ix1};
 
 pub trait Layer<S>
 where
