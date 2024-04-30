@@ -17,7 +17,7 @@ fn main() {
         [[1f32, 1f32], [1f32, 1f32]],
     ];
 
-    //neural_net.train(&training_data.view(), 5);
+    neural_net.train(&training_data.view(), 5);
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);

@@ -52,7 +52,7 @@ impl Model {
 
     pub fn train(&self, training_data: &ArrayView3<f32>, epochs: u32) {
         for iteration in 0..epochs {
-            let mut losses: Vec<f32> = Vec::new();
+            let mut losses = Vec::<f32>::new();
 
             for training_sample in training_data.axis_iter(Axis(0)) {
                 let training_input = training_sample.row(0);
@@ -61,7 +61,7 @@ impl Model {
                 let output_prediction = self.infer(training_input);
 
                 let loss = self.loss_fn.forward(output_prediction, output_truth.to_owned());
-                // losses.push(loss);
+                losses.push(loss.mean().unwrap());
 
                 // backprop
             }
