@@ -10,15 +10,14 @@ mod neural_network;
 mod optimizers;
 
 fn main() {
-    let mut neural_net_builder = ModelBuilder::new();
-    neural_net_builder.add_module(Box::new(Dense::new(2, 4)));
-    neural_net_builder.add_module(Box::new(LeakyRelu::new(0.1f32)));
-    neural_net_builder.add_module(Box::new(Dense::new(4, 4)));
-    neural_net_builder.add_module(Box::new(LeakyRelu::new(0.1f32)));
-    neural_net_builder.add_module(Box::new(Dense::new(4, 2)));
-    neural_net_builder.add_module(Box::new(Sigmoid::new()));
-    neural_net_builder.set_loss_fn(Box::new(MSE::new()));
-    let neural_net = neural_net_builder.build();
+    let neural_net = ModelBuilder::new()
+        .add_module(Box::new(Dense::new(2, 4)))
+        .add_module(Box::new(LeakyRelu::new(0.1f32)))
+        .add_module(Box::new(Dense::new(4, 4)))
+        .add_module(Box::new(LeakyRelu::new(0.1f32)))
+        .add_module(Box::new(Dense::new(4, 2)))
+        .add_module(Box::new(Sigmoid::new()))
+        .set_loss_fn(Box::new(MSE::new())).build();
 
     // TODO: implement a data loader
     let training_data = array![
@@ -28,7 +27,7 @@ fn main() {
         [[1f32, 1f32], [1f32, 1f32]],
     ];
 
-    //neural_net.train(&training_data.view(), 5);
+    neural_net.train(&training_data.view(), 5);
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);

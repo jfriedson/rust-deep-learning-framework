@@ -1,3 +1,5 @@
+use std::mem;
+use std::mem::take;
 use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model::Model;
 use crate::neural_network::module::Module;
@@ -31,13 +33,10 @@ impl ModelBuilder {
         self
     }
 
-    pub fn build(self) -> Model {
-        //let modules = &self.modules;
-        //let loss_fn = &self.loss_fn;
-
+    pub fn build(&mut self) -> Model {
         Model {
-            modules: self.modules,
-            loss_fn: self.loss_fn.unwrap(),
+            modules: take(&mut self.modules),
+            loss_fn: take(&mut self.loss_fn).unwrap(),
 
             training: false,
         }
