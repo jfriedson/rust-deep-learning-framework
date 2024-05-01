@@ -1,10 +1,6 @@
-use ndarray::{Array, ArrayBase, Data, Dimension};
+use ndarray::{Array, ArrayView, IxDyn};
 
-pub trait LossFunction<S, D>
-where
-    S: Data<Elem = f32>,
-    D: Dimension,
-{
-    fn forward(&self, predictions: ArrayBase<S, D>, truths: ArrayBase<S, D>) -> Array<f32, D>;
-    fn backward(&self, predictions: ArrayBase<S, D>, truths: ArrayBase<S, D>) -> Array<f32, D>;
+pub trait LossFunction {
+    fn forward(&self, predictions: ArrayView<f32, IxDyn>, truths: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn>;
+    fn backward(&self, predictions: ArrayView<f32, IxDyn>, truths: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn>;
 }

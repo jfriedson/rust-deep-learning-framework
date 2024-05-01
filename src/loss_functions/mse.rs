@@ -1,4 +1,4 @@
-use ndarray::{Array, ArrayBase, Data, Dimension};
+use ndarray::{Array, ArrayView, IxDyn};
 use crate::loss_functions::loss_function::LossFunction;
 
 pub struct MSE {
@@ -11,19 +11,15 @@ impl MSE {
     }
 }
 
-impl<S, D> LossFunction<S, D> for MSE
-where
-    S: Data<Elem = f32>,
-    D: Dimension,
-{
-    fn forward(&self, predictions: ArrayBase<S, D>, truths: ArrayBase<S, D>) -> Array<f32, D> {
+impl LossFunction for MSE {
+    fn forward(&self, predictions: ArrayView<f32, IxDyn>, truths: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
         let mut mse = &predictions - &truths;
         mse.mapv_inplace(|x| x.powi(2));
 
         mse
     }
 
-    fn backward(&self, predictions: ArrayBase<S, D>, truths: ArrayBase<S, D>) -> Array<f32, D> {
+    fn backward(&self, predictions: ArrayView<f32, IxDyn>, truths: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
         &predictions - &truths
     }
 }
