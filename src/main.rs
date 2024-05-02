@@ -1,34 +1,37 @@
-use ndarray::{array, Axis};
 use crate::loss_functions::mse::MSE;
 use crate::neural_network::activations::leaky_relu::LeakyRelu;
 use crate::neural_network::activations::sigmoid::Sigmoid;
 use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::model_builder::ModelBuilder;
+use crate::optimizers::sgd::SGD;
+use ndarray::{array, Axis};
 
+mod gradients;
 mod loss_functions;
 mod neural_network;
 mod optimizers;
 
 fn main() {
-    let mut neural_net_builder = ModelBuilder::new();
-    neural_net_builder.add_module(Box::new(Dense::new(2, 4)));
-    neural_net_builder.add_module(Box::new(LeakyRelu::new(0.1f32)));
-    neural_net_builder.add_module(Box::new(Dense::new(4, 4)));
-    neural_net_builder.add_module(Box::new(LeakyRelu::new(0.1f32)));
-    neural_net_builder.add_module(Box::new(Dense::new(4, 2)));
-    neural_net_builder.add_module(Box::new(Sigmoid::new()));
-    neural_net_builder.set_loss_fn(Box::new(MSE::new()));
-    let neural_net = neural_net_builder.build();
+    let neural_net = ModelBuilder::new()
+        .add_module(Box::new(Dense::new(2, 4)))
+        .add_module(Box::new(LeakyRelu::new(0.1)))
+        .add_module(Box::new(Dense::new(4, 4)))
+        .add_module(Box::new(LeakyRelu::new(0.1)))
+        .add_module(Box::new(Dense::new(4, 2)))
+        .add_module(Box::new(Sigmoid::new()))
+        .set_loss_fn(Box::new(MSE::new()))
+        .set_optimizer(Box::new(SGD::new(1e-3)))
+        .build();
 
     // TODO: implement a data loader
     let training_data = array![
-        [[0f32, 0f32], [0f32, 0f32]],
-        [[0f32, 1f32], [1f32, 0f32]],
-        [[1f32, 0f32], [0f32, 1f32]],
-        [[1f32, 1f32], [1f32, 1f32]],
+        [[0., 0.], [0., 0.]],
+        [[0., 1.], [1., 0.]],
+        [[1., 0.], [0., 1.]],
+        [[1., 1.], [1., 1.]],
     ];
 
-    //neural_net.train(&training_data.view(), 5);
+    neural_net.train(&training_data.view(), 5);
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);
