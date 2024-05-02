@@ -1,1 +1,3 @@
-mod optimizer;
+pub mod optimizer;
+
+pub mod sgd;

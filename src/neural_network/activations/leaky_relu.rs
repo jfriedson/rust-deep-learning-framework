@@ -1,5 +1,5 @@
-use ndarray::{Array, ArrayView, IxDyn};
 use crate::neural_network::module::Module;
+use ndarray::{Array, ArrayView, IxDyn};
 
 pub struct LeakyRelu {
     negative_slope: f32,
@@ -7,9 +7,7 @@ pub struct LeakyRelu {
 
 impl LeakyRelu {
     pub fn new(negative_slope: f32) -> Self {
-        LeakyRelu {
-            negative_slope
-        }
+        LeakyRelu { negative_slope }
     }
 }
 
