@@ -14,7 +14,7 @@ impl Module for Sigmoid {
         false
     }
 
-    fn forward(&self, z: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
+    fn forward(&self, z: ArrayView<f32, IxDyn>, training: bool) -> Array<f32, IxDyn> {
         z.mapv(|el| 1. / (1. + (-el).exp()))
     }
 

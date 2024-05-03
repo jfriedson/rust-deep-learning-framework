@@ -31,11 +31,11 @@ fn main() {
         [[1., 1.], [1., 1.]],
     ];
 
-    neural_net.train(&training_data.view(), 5);
+    neural_net.train(training_data.view(), 5);
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);
-        let output = neural_net.infer(input.into_dyn());
+        let output = neural_net.infer(input.into_dyn(), false);
         println!("{:?}", output);
     }
 }

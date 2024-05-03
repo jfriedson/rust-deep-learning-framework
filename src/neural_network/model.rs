@@ -2,8 +2,7 @@ use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array, ArrayView, ArrayView3, Axis, IxDyn};
-use std::ops::Div;
+use ndarray::{Array, ArrayView, ArrayView3, IxDyn};
 
 pub struct Model {
     pub(crate) modules: Vec<Box<dyn Module>>,
@@ -16,37 +15,26 @@ impl Model {
         ModelBuilder::new()
     }
 
-    pub fn infer(&self, input: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
+    pub fn forward(&self, input: ArrayView<f32, IxDyn>, training: bool) -> Array<f32, IxDyn> {
         let mut next_input = input.to_owned();
 
         for module in self.modules.iter() {
-            next_input = module.forward(next_input.view());
+            next_input = module.forward(next_input.view(), training);
         }
 
         next_input
     }
 
-    pub fn train(&self, training_data: &ArrayView3<f32>, epochs: u32) {
+    pub fn backward(&self, loss: ArrayView<f32, IxDyn>) {
+
+    }
+
+    pub fn train(&self, training_data: ArrayView3<f32> /* make dyn */, epochs: u32) {
+        //self.optimizer.prepare(&self);
         for iteration in 0..epochs {
-            let mut losses = Vec::<f32>::new();
+            let loss = self.optimizer.step(&self, training_data);
 
-            for training_sample in training_data.axis_iter(Axis(0)) {
-                let training_input = training_sample.row(0);
-                let output_truth = training_sample.row(1);
-
-                let output_prediction = self.infer(training_input.into_dyn());
-
-                let loss = self
-                    .loss_fn
-                    .forward(output_prediction.view().into_dyn(), output_truth.into_dyn());
-                losses.push(loss.mean().unwrap());
-
-                // TODO: backprop
-                // TODO: optimizer
-            }
-
-            let mse = losses.iter().sum::<f32>().div(losses.len() as f32);
-            println!("iteration: {} mse: {}", iteration + 1, mse);
+            println!("iteration: {} loss: {}", iteration + 1, loss);
         }
     }
 }

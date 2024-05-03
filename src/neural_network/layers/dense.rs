@@ -6,6 +6,8 @@ use rand::distributions::Standard;
 pub struct Dense {
     weights: Array2<f32>,
     biases: Array1<f32>,
+
+    // inputs: Array2<f32>,
 }
 
 impl Dense {
@@ -25,7 +27,7 @@ impl Module for Dense {
         true
     }
 
-    fn forward(&self, input: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
+    fn forward(&self, input: ArrayView<f32, IxDyn>, training: bool) -> Array<f32, IxDyn> {
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
@@ -33,7 +35,7 @@ impl Module for Dense {
         z.into_dyn()
     }
 
-    // fn forward(&self, input: &ArrayView1<f32>) -> (Array1<f32>, Array1<f32>) {
-    //     let z = &self.weights.dot(input) + &self.biases;
+    // fn backward(&self) {
+    //
     // }
 }
