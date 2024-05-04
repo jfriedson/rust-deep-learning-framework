@@ -2,7 +2,7 @@ use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{ArrayD, ArrayViewD};
+use ndarray::{Array0, ArrayD, ArrayViewD};
 
 pub struct Model {
     pub(crate) modules: Vec<Box<dyn Module>>,
@@ -15,14 +15,8 @@ impl Model {
         ModelBuilder::new()
     }
 
-    /*
-     * The methods below are structured this way because copying memory is expensive.
-     * Initializing next_input to 0s and manually stepping through the first iteration
-     * should be quicker than copying the input array despite the increased function size.
-     * Will test this hypothesis.
-     */
     pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        let mut next_input = ArrayD::zeros(input.raw_dim());
+        let mut next_input = Array0::<f32>::into_dyn(Default::default());
 
         let mut module_iter = self.modules.iter();
         if let Some(module) = module_iter.next() {
@@ -37,7 +31,7 @@ impl Model {
     }
 
     pub fn forward(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        let mut next_input = ArrayD::zeros(input.raw_dim());
+        let mut next_input = Array0::<f32>::into_dyn(Default::default());
 
         let mut module_iter = self.modules.iter();
         if let Some(module) = module_iter.next() {
@@ -52,7 +46,7 @@ impl Model {
     }
 
     pub fn backward(&self, loss: ArrayViewD<f32>) {
-        let mut next_loss = ArrayD::zeros(loss.raw_dim());
+        let mut next_loss = Array0::<f32>::into_dyn(Default::default());
 
         let mut module_iter = self.modules.iter();
         if let Some(module) = module_iter.next() {
@@ -62,12 +56,10 @@ impl Model {
         for module in module_iter {
             next_loss = module.forward(next_loss.view());
         }
-
-        //println!("{:?}", next_loss);
     }
 
-    pub fn train(&self, training_data: ArrayViewD<f32>, epochs: usize) {
-        self.optimizer.prepare(&self, training_data.raw_dim());
+    pub fn train(&mut self, training_data: ArrayViewD<f32>, epochs: usize) {
+        self.optimizer.prepare(&mut self.modules, training_data.raw_dim());
 
         for iteration in 0..epochs {
             let loss = self.optimizer.step(&self, &training_data);

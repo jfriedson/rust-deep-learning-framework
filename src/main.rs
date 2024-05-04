@@ -11,7 +11,7 @@ mod neural_network;
 mod optimizers;
 
 fn main() {
-    let neural_net = ModelBuilder::new()
+    let mut neural_net = ModelBuilder::new()
         .add_module(Box::new(Dense::new(2, 4)))
         .add_module(Box::new(LeakyRelu::new(0.1)))
         .add_module(Box::new(Dense::new(4, 4)))

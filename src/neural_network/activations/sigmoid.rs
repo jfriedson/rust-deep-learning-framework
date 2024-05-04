@@ -20,7 +20,7 @@ impl Module for Sigmoid {
         input.mapv(|z| 1. / (1. + (-z).exp()))
     }
 
-    fn prepare(&self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
+    fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
         // TODO: set gradient array size
 
         input_dim

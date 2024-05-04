@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array0, Array1, Array2, ArrayD, ArrayViewD, Dimension, Ix1, IxDyn, ShapeBuilder};
+use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 
@@ -26,16 +26,19 @@ impl Dense {
 
 impl Module for Dense {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        let original_dim = input.raw_dim();
+        if input.ndim() != 1 {
+            panic!("for now, fully connected layers only support 1 dimensional data")
+        }
+
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
 
-        z.into_shape(original_dim).unwrap().into_dyn()
+        z.into_dyn()
     }
 
-    fn prepare(&self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
-        &self.input_aggr = &Array2::zeros((batch_size, input_dim.size()));
+    fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
+        self.input_aggr = Array2::zeros((batch_size, input_dim.size()));
 
         // replace this with something better, like a struct member
         self.biases.raw_dim().into_dyn()
@@ -49,5 +52,7 @@ impl Module for Dense {
 
     fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
         // TODO: calculate delta
+
+        Array1::<f32>::from_elem(self.biases.raw_dim(), -0.01).into_dyn()
     }
 }

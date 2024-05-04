@@ -18,7 +18,7 @@ impl Module for LeakyRelu {
         z.mapv(|el| f32::max(el, el * self.negative_slope))
     }
 
-    fn prepare(&self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
+    fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
         // set z array size?
 
         input_dim

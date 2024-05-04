@@ -2,6 +2,7 @@ use crate::optimizers::optimizer::Optimizer;
 use ndarray::{ArrayViewD, ArrayViewMutD, Axis, IxDyn};
 use std::ops::{Div, Mul, SubAssign};
 use crate::neural_network::model::Model;
+use crate::neural_network::module::Module;
 
 pub struct SGD {
     learning_rate: f32,
@@ -16,33 +17,28 @@ impl SGD {
 }
 
 impl Optimizer for SGD {
-    fn prepare(&self, model: &Model, mut input_dim: IxDyn) {
-        for module in model.modules {
-            input_dim = module.prepare(1, input_dim);
+    fn prepare(&self, modules: &mut Vec<Box<dyn Module>>, mut training_data_dim: IxDyn) {
+        for module in modules.iter_mut() {
+            training_data_dim = module.prepare(1, training_data_dim);
         }
-
-        println!("{:?}", input_dim).row(0);
     }
 
     fn step(&self, model: &Model, training_data: &ArrayViewD<f32>) -> f32 {
         let mut losses = Vec::<f32>::new();
 
         for training_sample in training_data.axis_iter(Axis(0)) {
-            let training_input = training_sample.row(0);
-            let output_truth = training_sample.row(1);
+            let (training_input, mut output_truth) = training_sample.split_at(Axis(0), 1);
 
-            let output_prediction = model.forward(training_input.into_dyn());
+            let output_prediction = model.forward(training_input.remove_axis(Axis(0)).into_dyn());
 
             let loss = model
                 .loss_fn
-                .forward(output_prediction.view().into_dyn(), output_truth.into_dyn());
+                .forward(output_prediction.view().into_dyn(), output_truth.remove_axis(Axis(0)).into_dyn());
             losses.push(loss.mean().unwrap());
 
-            // TODO: backprop
             model.backward(loss.view());
 
-            // TODO: optimizer
-            //self.apply_gradients();
+            // model.apply_gradients(loss.view(), self.gradient_adjustment);
         }
 
         losses.iter().sum::<f32>().div(losses.len() as f32)
@@ -50,7 +46,7 @@ impl Optimizer for SGD {
 }
 
 impl SGD {
-    fn apply_gradients(
+    fn gradient_adjustment(
         &self,
         mut weights: ArrayViewMutD<f32>,
         mut biases: ArrayViewMutD<f32>,
