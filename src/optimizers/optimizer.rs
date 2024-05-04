@@ -1,6 +1,8 @@
-use ndarray::{ArrayView, ArrayView3, ArrayViewMut, IxDyn};
+use ndarray::{ArrayViewD, IxDyn};
 use crate::neural_network::model::Model;
 
 pub trait Optimizer {
-    fn step(&self, model: &Model, training_data: ArrayView3<f32>) -> f32;
+    fn prepare(&self, model: &Model, training_data: IxDyn);
+
+    fn step(&self, model: &Model, training_data: &ArrayViewD<f32>) -> f32;
 }

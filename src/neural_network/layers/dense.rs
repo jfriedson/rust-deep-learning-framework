@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array, Array1, Array2, ArrayView, Ix1, IxDyn};
+use ndarray::{Array0, Array1, Array2, ArrayD, ArrayViewD, Dimension, Ix1, IxDyn, ShapeBuilder};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 
@@ -7,7 +7,7 @@ pub struct Dense {
     weights: Array2<f32>,
     biases: Array1<f32>,
 
-    // inputs: Array2<f32>,
+    input_aggr: Array2<f32>,
 }
 
 impl Dense {
@@ -18,24 +18,36 @@ impl Dense {
         let weights = Array2::<f32>::random((output_count, input_count), Standard);
         let biases = Array1::<f32>::zeros(output_count);
 
-        Dense { weights, biases }
+        let input_aggr = Array2::<f32>::zeros((0,0));
+
+        Dense { weights, biases, input_aggr }
     }
 }
 
 impl Module for Dense {
-    fn trainable(&self) -> bool {
-        true
-    }
-
-    fn forward(&self, input: ArrayView<f32, IxDyn>, training: bool) -> Array<f32, IxDyn> {
+    fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+        let original_dim = input.raw_dim();
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
 
-        z.into_dyn()
+        z.into_shape(original_dim).unwrap().into_dyn()
     }
 
-    // fn backward(&self) {
-    //
-    // }
+    fn prepare(&self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
+        &self.input_aggr = &Array2::zeros((batch_size, input_dim.size()));
+
+        // replace this with something better, like a struct member
+        self.biases.raw_dim().into_dyn()
+    }
+
+    fn forward(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+        // TODO: append input
+
+        self.infer(input)
+    }
+
+    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
+        // TODO: calculate delta
+    }
 }

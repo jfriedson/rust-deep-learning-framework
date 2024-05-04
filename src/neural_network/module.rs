@@ -1,9 +1,11 @@
-use ndarray::{Array, ArrayView, IxDyn};
+use ndarray::{ArrayD, ArrayViewD, IxDyn};
 
 pub trait Module {
-    fn trainable(&self) -> bool;
+    fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32>;
 
-    fn forward(&self, input: ArrayView<f32, IxDyn>, training: bool) -> Array<f32, IxDyn>;
+    fn prepare(&self, batch_size: usize, input_dim: IxDyn) -> IxDyn;
 
-    // fn backward(&self, loss: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn>;
+    fn forward(&self, input: ArrayViewD<f32>) -> ArrayD<f32>;
+
+    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32>;
 }
