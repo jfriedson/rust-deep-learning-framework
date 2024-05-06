@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+use std::ops::{Deref, DerefMut};
 use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::module::Module;
@@ -30,10 +32,10 @@ impl Model {
         next_input
     }
 
-    pub fn forward(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let mut next_input = Array0::<f32>::into_dyn(Default::default());
 
-        let mut module_iter = self.modules.iter();
+        let mut module_iter = self.modules.iter_mut();
         if let Some(module) = module_iter.next() {
             next_input = module.forward(input);
         }
@@ -45,26 +47,16 @@ impl Model {
         next_input
     }
 
-    pub fn backward(&self, loss: ArrayViewD<f32>) {
+    pub fn backward(&mut self, loss: ArrayViewD<f32>) {
         let mut next_loss = Array0::<f32>::into_dyn(Default::default());
 
-        let mut module_iter = self.modules.iter();
+        let mut module_iter = self.modules.iter_mut();
         if let Some(module) = module_iter.next() {
             next_loss = module.forward(loss);
         }
 
         for module in module_iter {
             next_loss = module.forward(next_loss.view());
-        }
-    }
-
-    pub fn train(&mut self, training_data: ArrayViewD<f32>, epochs: usize) {
-        self.optimizer.prepare(&mut self.modules, training_data.raw_dim());
-
-        for iteration in 0..epochs {
-            let loss = self.optimizer.step(&self, &training_data);
-
-            println!("iteration: {} loss: {}", iteration + 1, loss);
         }
     }
 }

@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Dimension, Ix1, IxDyn};
+use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 
@@ -7,7 +7,8 @@ pub struct Dense {
     weights: Array2<f32>,
     biases: Array1<f32>,
 
-    input_aggr: Array2<f32>,
+    inputs: Array2<f32>,
+    deltas: Array1<f32>,
 }
 
 impl Dense {
@@ -18,17 +19,24 @@ impl Dense {
         let weights = Array2::<f32>::random((output_count, input_count), Standard);
         let biases = Array1::<f32>::zeros(output_count);
 
-        let input_aggr = Array2::<f32>::zeros((0,0));
+        let inputs = Array2::<f32>::zeros((0, 0));
+        let deltas = Array1::<f32>::zeros(0);
 
-        Dense { weights, biases, input_aggr }
+        Dense {
+            weights,
+            biases,
+            inputs,
+            deltas,
+        }
     }
 }
 
 impl Module for Dense {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        if input.ndim() != 1 {
-            panic!("for now, fully connected layers only support 1 dimensional data")
-        }
+        debug_assert!(
+            input.ndim() != 1,
+            "for now, fully connected layers only support 1 dimensional data"
+        );
 
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
@@ -38,16 +46,17 @@ impl Module for Dense {
     }
 
     fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
-        self.input_aggr = Array2::zeros((batch_size, input_dim.size()));
+        self.inputs = Array2::zeros((batch_size, input_dim.size()));
 
-        // replace this with something better, like a struct member
         self.biases.raw_dim().into_dyn()
     }
 
-    fn forward(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        // TODO: append input
+    fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+        let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
-        self.infer(input)
+        self.inputs.push(Axis(0), input_flattened).unwrap();
+
+        self.infer(input_flattened.into_dyn())
     }
 
     fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {

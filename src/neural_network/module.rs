@@ -5,7 +5,7 @@ pub trait Module {
 
     fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn;
 
-    fn forward(&self, input: ArrayViewD<f32>) -> ArrayD<f32>;
+    fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32>;
 
     fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32>;
 }

@@ -3,6 +3,7 @@ use crate::neural_network::activations::leaky_relu::LeakyRelu;
 use crate::neural_network::activations::sigmoid::Sigmoid;
 use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::model_builder::ModelBuilder;
+use crate::neural_network::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
 use ndarray::{array, Axis};
 
@@ -19,8 +20,11 @@ fn main() {
         .add_module(Box::new(Dense::new(4, 2)))
         .add_module(Box::new(Sigmoid::new()))
         .set_loss_fn(Box::new(MSE::new()))
-        .set_optimizer(Box::new(SGD::new(1e-3)))
         .build();
+    let loss_fn = Box::new(MSE::new());
+    let optimizer = Box::new(SGD::new(1e-3));
+
+    let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
 
     // TODO: implement a data loader
     let training_data = array![
@@ -31,7 +35,7 @@ fn main() {
         [[1., 1.], [1., 1.]],
     ];
 
-    neural_net.train(training_data.view().into_dyn(), 5);
+    trainer.train(training_data.view().into_dyn(), 5);
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);

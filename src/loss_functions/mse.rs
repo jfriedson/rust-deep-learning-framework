@@ -10,22 +10,14 @@ impl MSE {
 }
 
 impl LossFunction for MSE {
-    fn forward(
-        &self,
-        predictions: ArrayViewD<f32>,
-        truths: ArrayViewD<f32>,
-    ) -> ArrayD<f32> {
-        let mut mse = &predictions - &truths;
+    fn forward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> ArrayD<f32> {
+        let mut mse = predictions - truths;
         mse.mapv_inplace(|x| x.powi(2));
 
         mse
     }
 
-    fn backward(
-        &self,
-        predictions: ArrayViewD<f32>,
-        truths: ArrayViewD<f32>,
-    ) -> ArrayD<f32> {
-        &predictions - &truths
+    fn backward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> ArrayD<f32> {
+        predictions - truths
     }
 }
