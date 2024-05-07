@@ -1,22 +1,11 @@
-use std::cell::RefCell;
-use std::ops::{Deref, DerefMut};
-use crate::loss_functions::loss_function::LossFunction;
-use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::module::Module;
-use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array0, ArrayD, ArrayViewD};
 
 pub struct Model {
     pub(crate) modules: Vec<Box<dyn Module>>,
-    pub(crate) loss_fn: Box<dyn LossFunction>,
-    pub(crate) optimizer: Box<dyn Optimizer>,
 }
 
 impl Model {
-    pub fn builder() -> ModelBuilder {
-        ModelBuilder::new()
-    }
-
     pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let mut next_input = Array0::<f32>::into_dyn(Default::default());
 

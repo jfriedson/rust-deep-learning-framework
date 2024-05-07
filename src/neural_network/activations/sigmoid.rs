@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array0, ArrayD, ArrayViewD, Axis, Dimension, IxDyn};
+use ndarray::{Array0, ArrayD, ArrayViewD, Axis, IxDyn};
 
 pub struct Sigmoid {
     gradients: ArrayD<f32>,

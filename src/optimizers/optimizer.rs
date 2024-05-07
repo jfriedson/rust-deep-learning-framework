@@ -1,10 +1,8 @@
-use std::cell::RefCell;
 use crate::neural_network::model::Model;
-use crate::neural_network::module::Module;
 use ndarray::{ArrayViewD, IxDyn};
 
-pub trait Optimizer {
+pub trait Optimizer<'a> {
     fn prepare(&self, model: &mut Model, training_data_dim: IxDyn);
 
-    fn step(&mut self, training_data: &ArrayViewD<f32>) -> f32;
+    fn data_batch(&mut self, training_data: &'a ArrayViewD<f32>) -> Option<ArrayViewD<f32>>;
 }
