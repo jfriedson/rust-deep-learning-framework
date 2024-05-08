@@ -5,14 +5,14 @@ use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
 
 pub struct ModelTrainer<'a> {
-    model: &'a mut Model,
+    model: Box<Model>,
     loss_fn: Box<dyn LossFunction>,
     optimizer: Box<dyn Optimizer<'a>>,
     gradients: ArrayD<f32>,
 }
 
 impl<'a> ModelTrainer<'a> {
-    pub fn new(model: &'a mut Model, loss_fn: Box<dyn LossFunction>, optimizer: Box<dyn Optimizer<'a>>) -> Self {
+    pub fn new(model: Box<Model>, loss_fn: Box<dyn LossFunction>, optimizer: Box<dyn Optimizer<'a>>) -> Self {
         let gradients = Array1::<f32>::into_dyn(Default::default());
 
         print!("{:?}", gradients);
@@ -24,15 +24,16 @@ impl<'a> ModelTrainer<'a> {
         }
     }
 
-    pub fn train(&mut self, training_data: &'a ArrayViewD<f32>, epochs: usize) {
+    pub fn train(&'a mut self, training_data: &'a ArrayViewD<f32>, epochs: usize) {
         // self.optimizer
         //     .prepare(self.model, (&training_data).raw_dim());
 
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();
 
+            let mut training_data_iter = training_data.axis_iter(Axis(0));
             loop {
-                let data_batch_option = self.optimizer.data_batch(&training_data);
+                let data_batch_option = self.optimizer.data_batch(&mut training_data_iter);
 
                 if data_batch_option.is_none() {
                     break;

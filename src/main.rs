@@ -33,15 +33,13 @@ fn main() {
         [[1., 1.], [1., 1.]],
     ];
 
-    {
-        let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
-        trainer.train(&training_data.view().into_dyn(), 5);
-    }
+    let mut trainer = ModelTrainer::new(Box::new(neural_net), loss_fn, optimizer);
+    trainer.train(&training_data.view().into_dyn(), 5);
 
     for sample in training_data.axis_iter(Axis(0)) {
         let input = sample.row(0);
 
-        let output = neural_net.forward(input.into_dyn());
+        let output = neural_net.infer(input.into_dyn());
 
         println!("{:?}", output);
     }

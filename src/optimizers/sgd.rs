@@ -4,21 +4,17 @@ use ndarray::{ArrayViewD, Axis, IxDyn};
 use ndarray::iter::AxisIter;
 use rand::seq::IteratorRandom;
 
-pub struct SGD<'a> {
+pub struct SGD {
     learning_rate: f32,
-
-    data_iter: Option<AxisIter<'a, f32, IxDyn>>,
 }
 
-impl<'a> SGD<'a> {
+impl SGD {
     pub fn new(learning_rate: f32) -> Self {
-        let data_iter = None;
-
-        SGD { learning_rate, data_iter }
+        SGD { learning_rate }
     }
 }
 
-impl<'a> Optimizer<'a> for SGD<'a> {
+impl<'a> Optimizer<'a> for SGD {
     fn prepare(&self, model: &mut Model, training_data_dim: IxDyn) {
         let mut next_input_dim = training_data_dim.clone();
 
@@ -27,12 +23,8 @@ impl<'a> Optimizer<'a> for SGD<'a> {
         }
     }
 
-    fn data_batch(&mut self, training_data: &'a ArrayViewD<f32>) -> Option<ArrayViewD<f32>> {
-        if self.data_iter.is_none() {
-            self.data_iter = Some(training_data.axis_iter(Axis(0)));
-        }
-
-        self.data_iter.as_ref().unwrap().clone().choose(&mut rand::thread_rng())
+    fn data_batch(&'a mut self, training_data_iter: &'a mut AxisIter<'a, f32, IxDyn>) -> Option<ArrayViewD<f32>> {
+        training_data_iter.choose(&mut rand::thread_rng())
     }
 }
 
