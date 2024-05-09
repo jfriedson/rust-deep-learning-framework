@@ -1,8 +1,6 @@
 use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{ArrayViewD, Axis, IxDyn};
-use ndarray::iter::AxisIter;
-use rand::seq::IteratorRandom;
+use ndarray::IxDyn;
 
 pub struct SGD {
     learning_rate: f32,
@@ -14,7 +12,7 @@ impl SGD {
     }
 }
 
-impl<'a> Optimizer<'a> for SGD {
+impl Optimizer for SGD {
     fn prepare(&self, model: &mut Model, training_data_dim: IxDyn) {
         let mut next_input_dim = training_data_dim.clone();
 
@@ -23,8 +21,8 @@ impl<'a> Optimizer<'a> for SGD {
         }
     }
 
-    fn data_batch(&'a mut self, training_data_iter: &'a mut AxisIter<'a, f32, IxDyn>) -> Option<ArrayViewD<f32>> {
-        training_data_iter.choose(&mut rand::thread_rng())
+    fn batch_size(&mut self) -> f32 {
+        1.
     }
 }
 

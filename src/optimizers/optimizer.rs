@@ -1,9 +1,8 @@
 use crate::neural_network::model::Model;
-use ndarray::{ArrayViewD, IxDyn};
-use ndarray::iter::AxisIter;
+use ndarray::IxDyn;
 
-pub trait Optimizer<'a> {
+pub trait Optimizer {
     fn prepare(&self, model: &mut Model, training_data_dim: IxDyn);
 
-    fn data_batch(&'a mut self, training_data_iter: &'a mut AxisIter<'a, f32, IxDyn>) -> Option<ArrayViewD<f32>>;
+    fn batch_size(&mut self) -> f32;
 }
