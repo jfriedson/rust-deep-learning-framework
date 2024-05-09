@@ -1,18 +1,19 @@
 use std::ops::Div;
-use ndarray::{Array1, ArrayD, ArrayViewD, Axis};
+use ndarray::{Array1, ArrayD, Axis};
+use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
 
 pub struct ModelTrainer<'a> {
-    model: Box<Model>,
+    model: &'a mut Model,
     loss_fn: Box<dyn LossFunction>,
-    optimizer: Box<dyn Optimizer<'a>>,
+    optimizer: Box<dyn Optimizer>,
     gradients: ArrayD<f32>,
 }
 
 impl<'a> ModelTrainer<'a> {
-    pub fn new(model: Box<Model>, loss_fn: Box<dyn LossFunction>, optimizer: Box<dyn Optimizer<'a>>) -> Self {
+    pub fn new(model: &'a mut Model, loss_fn: Box<dyn LossFunction>, optimizer: Box<dyn Optimizer>) -> Self {
         let gradients = Array1::<f32>::into_dyn(Default::default());
 
         print!("{:?}", gradients);
@@ -24,42 +25,32 @@ impl<'a> ModelTrainer<'a> {
         }
     }
 
-    pub fn train(&'a mut self, training_data: &'a ArrayViewD<f32>, epochs: usize) {
+    pub fn train(&mut self, data_loader: &mut DataLoader<f32>, epochs: usize) {
         // self.optimizer
         //     .prepare(self.model, (&training_data).raw_dim());
 
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();
 
-            let mut training_data_iter = training_data.axis_iter(Axis(0));
-            loop {
-                let data_batch_option = self.optimizer.data_batch(&mut training_data_iter);
+            for data_sample in data_loader.get_next_data_sample() {
+                let (training_input, output_truth) = data_sample.split_at(Axis(0), 1);
 
-                if data_batch_option.is_none() {
-                    break;
-                }
+                let output_prediction = self.model.forward(training_input.remove_axis(Axis(0)).into_dyn());
 
-                let data_batch = data_batch_option.unwrap();
-                for data_sample in data_batch.axis_iter(Axis(0)) {
-                    let (training_input, output_truth) = data_sample.split_at(Axis(0), 1);
+                let loss = self.loss_fn.forward(
+                    &output_prediction.view().into_dyn(),
+                    &output_truth,
+                );
+                losses.push(loss.mean().unwrap());
 
-                    let output_prediction = self.model.forward(training_input.remove_axis(Axis(0)).into_dyn());
+                let loss_prime = self.loss_fn.backward(
+                    &output_prediction.view().into_dyn(),
+                    &output_truth,
+                );
+                self.model.backward(loss_prime.view());
 
-                    let loss = self.loss_fn.forward(
-                        &output_prediction.view().into_dyn(),
-                        &output_truth,
-                    );
-                    losses.push(loss.mean().unwrap());
-
-                    let loss_prime = self.loss_fn.backward(
-                        &output_prediction.view().into_dyn(),
-                        &output_truth,
-                    );
-                    self.model.backward(loss_prime.view());
-
-                    // TODO: optimizer.optimize_gradients()
-                    // TODO: model.apply_gradients(loss.view(), self.gradient_adjustment);
-                }
+                // TODO: optimizer.optimize_gradients()
+                // TODO: model.apply_gradients(loss.view(), self.gradient_adjustment);
             }
 
             let loss = losses.iter().sum::<f32>().div(losses.len() as f32);

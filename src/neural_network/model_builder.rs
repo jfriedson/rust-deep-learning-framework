@@ -4,13 +4,13 @@ use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
 use std::mem::take;
 
-pub struct ModelBuilder<'a> {
+pub struct ModelBuilder {
     modules: Vec<Box<dyn Module>>,
     loss_fn: Option<Box<dyn LossFunction>>,
-    optimizer: Option<Box<dyn Optimizer<'a>>>,
+    optimizer: Option<Box<dyn Optimizer>>,
 }
 
-impl<'a> ModelBuilder<'a> {
+impl ModelBuilder {
     pub fn new() -> Self {
         let modules = Vec::new();
         let loss_fn = None;
@@ -35,7 +35,7 @@ impl<'a> ModelBuilder<'a> {
         self
     }
 
-    pub fn set_optimizer(&mut self, optimizer: Box<dyn Optimizer<'a>>) -> &mut Self {
+    pub fn set_optimizer(&mut self, optimizer: Box<dyn Optimizer>) -> &mut Self {
         self.optimizer = Option::from(optimizer);
 
         self

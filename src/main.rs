@@ -5,11 +5,13 @@ use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
-use ndarray::{array, Axis};
+use ndarray::{array, Axis, Ix3};
+use crate::data_loader::data_loader::DataLoader;
 
 mod loss_functions;
 mod neural_network;
 mod optimizers;
+mod data_loader;
 
 fn main() {
     let mut neural_net = ModelBuilder::new()
@@ -32,12 +34,13 @@ fn main() {
         [[1., 0.], [0., 1.]],
         [[1., 1.], [1., 1.]],
     ];
+    let mut data_loader = DataLoader::<f32>::from_array(training_data.into_dyn());
 
-    let mut trainer = ModelTrainer::new(Box::new(neural_net), loss_fn, optimizer);
-    trainer.train(&training_data.view().into_dyn(), 5);
+    let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
+    trainer.train(&mut data_loader, 5);
 
-    for sample in training_data.axis_iter(Axis(0)) {
-        let input = sample.row(0);
+    for sample in data_loader.get_next_data_sample() {
+        let input = sample.rows().into_iter().next().unwrap();
 
         let output = neural_net.infer(input.into_dyn());
 
