@@ -6,14 +6,12 @@ use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
-use ndarray::{array, Axis, Ix3};
-use crate::data_loader::data_loader::DataLoader;
+use ndarray::array;
 
 mod data_loader;
 mod loss_functions;
 mod neural_network;
 mod optimizers;
-mod data_loader;
 
 fn main() {
     let mut neural_net = ModelBuilder::new()

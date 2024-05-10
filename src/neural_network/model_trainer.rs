@@ -1,5 +1,3 @@
-use std::ops::Div;
-use ndarray::{Array1, ArrayD, Axis};
 use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model::Model;
@@ -27,7 +25,7 @@ impl<'a> ModelTrainer<'a> {
             model,
             loss_fn,
             optimizer,
-            gradients
+            gradients,
         }
     }
 
