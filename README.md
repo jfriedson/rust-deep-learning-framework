@@ -1,5 +1,5 @@
 # A (basic) deep learning framework in Rust
-This is an effort to really learn rust and refresh my knowledge of training neural networks. The API is inspired by Torch.
+This is an effort to really learn rust and refresh my knowledge of training neural networks. The API is inspired by PyTorch.
 
 I've really enjoyed my time using Rust so far. Planning to add many more features and statistical results for common datasets.
 
