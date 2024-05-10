@@ -1,30 +1,51 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array, ArrayView, IxDyn};
+use ndarray::{Array2, ArrayD, ArrayViewD, Axis, IxDyn};
 
 pub struct LeakyRelu {
     negative_slope: f32,
+
+    gradients: ArrayD<f32>,
 }
 
 impl LeakyRelu {
     pub fn new(negative_slope: f32) -> Self {
-        LeakyRelu { negative_slope }
+        let gradients = Array2::<f32>::zeros((0, 4)).into_dyn();
+
+        LeakyRelu {
+            negative_slope,
+
+            gradients,
+        }
     }
 }
 
 impl Module for LeakyRelu {
-    fn trainable(&self) -> bool {
-        false
-    }
-
-    fn forward(&self, z: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
+    fn infer(&self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         z.mapv(|el| f32::max(el, el * self.negative_slope))
     }
 
-    // fn backward(&self, z: ArrayBase<S, D>) -> Array<f32, D>
-    // where
-    //     S: Data<Elem = f32>,
-    //     D: Dimension,
-    // {
-    //     z.mapv(|el| if el > 0f32 { 1f32 } else { self.negative_slope })
-    // }
+    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
+        self.gradients = ArrayD::<f32>::zeros(input_dim.clone()).insert_axis(Axis(0));
+
+        input_dim
+    }
+
+    fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
+        let a = self.infer(z);
+
+        let error = self.derivative(a.view());
+        self.gradients.push(Axis(0), error.view()).unwrap();
+
+        a
+    }
+
+    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
+        &loss * &self.gradients
+    }
+}
+
+impl LeakyRelu {
+    fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
+        a.mapv(|el| if el > 0. { 1. } else { self.negative_slope })
+    }
 }

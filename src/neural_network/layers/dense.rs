@@ -1,11 +1,14 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array, Array1, Array2, ArrayView, Ix1, IxDyn};
+use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 
 pub struct Dense {
     weights: Array2<f32>,
     biases: Array1<f32>,
+
+    inputs: Array2<f32>,
+    deltas: Array1<f32>,
 }
 
 impl Dense {
@@ -16,16 +19,20 @@ impl Dense {
         let weights = Array2::<f32>::random((output_count, input_count), Standard);
         let biases = Array1::<f32>::zeros(output_count);
 
-        Dense { weights, biases }
+        let inputs = Array2::<f32>::zeros((0, input_count));
+        let deltas = Array1::<f32>::zeros(0);
+
+        Dense {
+            weights,
+            biases,
+            inputs,
+            deltas,
+        }
     }
 }
 
 impl Module for Dense {
-    fn trainable(&self) -> bool {
-        true
-    }
-
-    fn forward(&self, input: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
+    fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
@@ -33,7 +40,26 @@ impl Module for Dense {
         z.into_dyn()
     }
 
-    // fn forward(&self, input: &ArrayView1<f32>) -> (Array1<f32>, Array1<f32>) {
-    //     let z = &self.weights.dot(input) + &self.biases;
-    // }
+    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
+        println!("{:?}", input_dim);
+        self.inputs = Array2::zeros((0, input_dim.size()));
+
+        self.biases.raw_dim().into_dyn()
+    }
+
+    fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+        let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
+
+        println!("{:?}", input_flattened);
+
+        self.inputs.push(Axis(0), input_flattened).unwrap();
+
+        self.infer(input_flattened.into_dyn())
+    }
+
+    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
+        // TODO: calculate delta
+
+        Array1::<f32>::from_elem(self.biases.raw_dim(), -0.01).into_dyn()
+    }
 }

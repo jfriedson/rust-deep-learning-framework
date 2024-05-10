@@ -1,28 +1,48 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array, ArrayView, IxDyn};
+use ndarray::{Array2, ArrayD, ArrayViewD, Axis, IxDyn};
 
-pub struct Sigmoid {}
+pub struct Sigmoid {
+    gradients: ArrayD<f32>,
+}
 
 impl Sigmoid {
     pub fn new() -> Self {
-        Sigmoid {}
+        let gradients = Array2::<f32>::zeros((0, 2)).into_dyn();
+
+        Sigmoid { gradients }
     }
 }
 
 impl Module for Sigmoid {
-    fn trainable(&self) -> bool {
-        false
+    fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+        input.mapv(|z| 1. / (1. + (-z).exp()))
     }
 
-    fn forward(&self, z: ArrayView<f32, IxDyn>) -> Array<f32, IxDyn> {
-        z.mapv(|el| 1. / (1. + (-el).exp()))
+    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
+        self.gradients = ArrayD::<f32>::zeros(input_dim.clone()).insert_axis(Axis(0));
+        input_dim
     }
 
-    // fn backward(&self, z: ArrayBase<S, D>) -> Array<f32, D> {
-    //     let mut sigmoid = self.forward(z);
-    //
-    //     sigmoid.mapv_inplace(|el| el * (1f32 - el));
-    //
-    //     sigmoid
-    // }
+    fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
+        let a = self.infer(z);
+
+        let error = self.derivative(a.view());
+        self.gradients
+            .push(Axis(0), error.view())
+            .expect("failed to push gradients to sigmoid layer");
+
+        a
+    }
+
+    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
+        &loss * &self.gradients
+    }
+}
+
+impl Sigmoid {
+    fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
+        let error = a.mapv(|el| el * (1. - el));
+
+        error
+    }
 }

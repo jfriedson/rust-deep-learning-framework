@@ -44,8 +44,6 @@ impl ModelBuilder {
     pub fn build(&mut self) -> Model {
         Model {
             modules: take(&mut self.modules),
-            loss_fn: take(&mut self.loss_fn).unwrap(),
-            optimizer: take(&mut self.optimizer).unwrap(),
         }
     }
 }
