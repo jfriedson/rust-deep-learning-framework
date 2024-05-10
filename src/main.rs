@@ -1,3 +1,4 @@
+use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::mse::MSE;
 use crate::neural_network::activations::leaky_relu::LeakyRelu;
 use crate::neural_network::activations::sigmoid::Sigmoid;
@@ -8,6 +9,7 @@ use crate::optimizers::sgd::SGD;
 use ndarray::{array, Axis, Ix3};
 use crate::data_loader::data_loader::DataLoader;
 
+mod data_loader;
 mod loss_functions;
 mod neural_network;
 mod optimizers;
@@ -39,7 +41,7 @@ fn main() {
     let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
     trainer.train(&mut data_loader, 5);
 
-    for sample in data_loader.get_next_data_sample() {
+    for sample in data_loader.iter() {
         let input = sample.rows().into_iter().next().unwrap();
 
         let output = neural_net.infer(input.into_dyn());
