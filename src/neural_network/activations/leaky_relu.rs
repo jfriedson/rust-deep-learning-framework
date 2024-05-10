@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array0, ArrayD, ArrayViewD, Axis, IxDyn};
+use ndarray::{Array2, ArrayD, ArrayViewD, Axis, IxDyn};
 
 pub struct LeakyRelu {
     negative_slope: f32,
@@ -9,7 +9,7 @@ pub struct LeakyRelu {
 
 impl LeakyRelu {
     pub fn new(negative_slope: f32) -> Self {
-        let gradients = Array0::<f32>::into_dyn(Default::default());
+        let gradients = Array2::<f32>::zeros((0, 4)).into_dyn();
 
         LeakyRelu {
             negative_slope,
@@ -24,12 +24,8 @@ impl Module for LeakyRelu {
         z.mapv(|el| f32::max(el, el * self.negative_slope))
     }
 
-    fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
-        self.gradients = self
-            .gradients
-            .clone()
-            .into_shape(input_dim.clone())
-            .unwrap();
+    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
+        self.gradients = ArrayD::<f32>::zeros(input_dim.clone()).insert_axis(Axis(0));
 
         input_dim
     }
@@ -38,9 +34,7 @@ impl Module for LeakyRelu {
         let a = self.infer(z);
 
         let error = self.derivative(a.view());
-        self.gradients
-            .push(Axis(0), error.view())
-            .expect("failed to push gradients to leakyRelu layer");
+        self.gradients.push(Axis(0), error.view()).unwrap();
 
         a
     }

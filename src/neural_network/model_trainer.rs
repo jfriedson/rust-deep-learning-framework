@@ -26,8 +26,8 @@ impl<'a> ModelTrainer<'a> {
     }
 
     pub fn train(&mut self, data_loader: &mut DataLoader<f32>, epochs: usize) {
-        // self.optimizer
-        //     .prepare(self.model, (&training_data).raw_dim());
+        self.optimizer
+            .prepare(self.model, data_loader.get_data_dim());
 
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();

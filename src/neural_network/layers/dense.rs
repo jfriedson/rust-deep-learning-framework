@@ -19,7 +19,7 @@ impl Dense {
         let weights = Array2::<f32>::random((output_count, input_count), Standard);
         let biases = Array1::<f32>::zeros(output_count);
 
-        let inputs = Array2::<f32>::zeros((0, 0));
+        let inputs = Array2::<f32>::zeros((0, input_count));
         let deltas = Array1::<f32>::zeros(0);
 
         Dense {
@@ -33,11 +33,6 @@ impl Dense {
 
 impl Module for Dense {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        debug_assert!(
-            input.ndim() != 1,
-            "for now, fully connected layers only support 1 dimensional data"
-        );
-
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
@@ -47,6 +42,8 @@ impl Module for Dense {
 
     fn prepare(&mut self, batch_size: usize, input_dim: IxDyn) -> IxDyn {
         self.inputs = Array2::zeros((batch_size, input_dim.size()));
+    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
+        self.inputs = Array2::zeros((0, input_dim.size()));
 
         self.biases.raw_dim().into_dyn()
     }

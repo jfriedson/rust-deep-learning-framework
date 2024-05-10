@@ -14,10 +14,10 @@ impl SGD {
 
 impl Optimizer for SGD {
     fn prepare(&self, model: &mut Model, training_data_dim: IxDyn) {
-        let mut next_input_dim = training_data_dim.clone();
+        let mut next_input_dim = training_data_dim;
 
         for module in model.modules.iter_mut() {
-            next_input_dim = module.prepare(1, next_input_dim);
+            next_input_dim = module.prepare(next_input_dim);
         }
     }
 
