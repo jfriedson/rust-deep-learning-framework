@@ -1,5 +1,6 @@
 use ndarray::iter::AxisIter;
 use ndarray::{ArrayView, ArrayViewD, IxDyn};
+use rand::Rng;
 use rand::seq::IteratorRandom;
 
 pub struct BatchIter<'a, A> {
@@ -34,9 +35,11 @@ pub struct RandomIter<'a, A> {
     pub(crate) data_iter: AxisIter<'a, A, IxDyn>,
 }
 
-impl<'a, A> RandomIter<'a, A> {
-    fn next(mut self) -> Option<ArrayView<'a, A, IxDyn>> {
-        self.data_iter.choose(&mut rand::thread_rng())
+impl<'a, A> Iterator for RandomIter<'a, A> {
+    type Item = ArrayViewD<'a, A>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.data_iter.by_ref().choose_stable(&mut rand::thread_rng())
     }
 }
 

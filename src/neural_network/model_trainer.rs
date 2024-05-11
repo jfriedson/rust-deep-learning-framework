@@ -4,6 +4,7 @@ use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, ArrayD, Axis, RemoveAxis};
 use std::ops::Div;
+use rand::seq::IteratorRandom;
 
 pub struct ModelTrainer<'a> {
     model: &'a mut Model,
@@ -36,7 +37,8 @@ impl<'a> ModelTrainer<'a> {
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();
 
-            for data_sample in data_loader.iter() {
+            for data_sample in data_loader.rand_iter() {
+                println!("{:?}",data_sample);
                 let (training_input, output_truth) = data_sample.split_at(Axis(0), 1);
 
                 let output_prediction = self
