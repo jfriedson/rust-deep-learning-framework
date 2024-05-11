@@ -41,7 +41,6 @@ impl Module for Dense {
     }
 
     fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        println!("{:?}", input_dim);
         self.inputs = Array2::zeros((0, input_dim.size()));
 
         self.biases.raw_dim().into_dyn()
@@ -49,8 +48,6 @@ impl Module for Dense {
 
     fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
-
-        println!("{:?}", input_flattened);
 
         self.inputs.push(Axis(0), input_flattened).unwrap();
 
