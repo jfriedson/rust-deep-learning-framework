@@ -1,6 +1,6 @@
 use crate::data_loader::data_loader_iter::{BatchIter, RandomBatchIter};
 use ndarray::iter::AxisIter;
-use ndarray::{ArrayD, ArrayViewD, Axis, IxDyn};
+use ndarray::{ArrayD, ArrayViewD, Axis, IxDyn, RemoveAxis};
 use rand::seq::IteratorRandom;
 
 pub struct DataLoader<A> {
@@ -13,7 +13,7 @@ impl<A> DataLoader<A> {
     }
 
     pub fn get_data_dim(&self) -> IxDyn {
-        self.data_set.raw_dim()
+        self.data_set.raw_dim().remove_axis(Axis(0))
     }
 
     pub fn shuffle_data(&mut self, batch_size: usize) -> Option<ArrayViewD<A>> {
