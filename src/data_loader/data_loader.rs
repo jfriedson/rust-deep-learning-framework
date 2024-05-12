@@ -27,8 +27,12 @@ impl<A> DataLoader<A> {
     }
     
     pub fn rand_iter(&mut self) -> RandomIter<A> {
+        let mut index_vec: Vec<usize> = (0..self.data_set.axis_iter(Axis(0)).len()).collect();
+        index_vec.shuffle(&mut thread_rng());
+
         RandomIter {
-            data_iter: self.data_set.axis_iter(Axis(0)),
+            data_set: &self.data_set,
+            index_vec,
         }
     }
 }
