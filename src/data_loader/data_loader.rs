@@ -1,6 +1,10 @@
-use crate::data_loader::data_loader_iter::{BatchIter, RandomIter};
-use ndarray::iter::AxisIter;
 use ndarray::{ArrayD, Axis, IxDyn, RemoveAxis};
+use ndarray::iter::AxisIter;
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+
+use crate::data_loader::batch_iterator::BatchIter;
+use crate::data_loader::random_iterator::RandomIter;
 
 pub struct DataLoader<A> {
     data_set: ArrayD<A>,
@@ -25,7 +29,7 @@ impl<A> DataLoader<A> {
             batch_size,
         }
     }
-    
+
     pub fn rand_iter(&mut self) -> RandomIter<A> {
         let mut index_vec: Vec<usize> = (0..self.data_set.axis_iter(Axis(0)).len()).collect();
         index_vec.shuffle(&mut thread_rng());
