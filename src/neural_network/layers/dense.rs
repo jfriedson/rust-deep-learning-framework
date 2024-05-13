@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
+use ndarray::{Array1, Array2, Array3, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 
@@ -8,7 +8,7 @@ pub struct Dense {
     biases: Array1<f32>,
 
     inputs: Array2<f32>,
-    deltas: Array1<f32>,
+    deltas: Array3<f32>,
 }
 
 impl Dense {
@@ -20,7 +20,7 @@ impl Dense {
         let biases = Array1::<f32>::zeros(output_count);
 
         let inputs = Array2::<f32>::zeros((0, input_count));
-        let deltas = Array1::<f32>::zeros(0);
+        let deltas = Array3::<f32>::zeros((0, output_count, input_count));
 
         Dense {
             weights,
@@ -41,7 +41,11 @@ impl Module for Dense {
     }
 
     fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        self.inputs = Array2::zeros((0, input_dim.size()));
+        debug_assert_eq!(
+            self.inputs.dim(),
+            Array2::<f32>::zeros((0, input_dim.size())).dim(),
+            "input array shape does not match in preparation of dense layer"
+        );
 
         self.biases.raw_dim().into_dyn()
     }
@@ -54,7 +58,7 @@ impl Module for Dense {
         self.infer(input_flattened.into_dyn())
     }
 
-    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
+    fn backward(&mut self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
         // TODO: calculate delta
 
         Array1::<f32>::from_elem(self.biases.raw_dim(), -0.01).into_dyn()

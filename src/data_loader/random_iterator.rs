@@ -11,6 +11,8 @@ impl<'a, A> Iterator for RandomIter<'a, A> {
     fn next(&mut self) -> Option<Self::Item> {
         let index = self.index_vec.pop()?;
 
-        Some(self.data_set.index_axis(Axis(0), index))
+        let data_sample = self.data_set.index_axis(Axis(0), index);
+
+        Some(data_sample)
     }
 }

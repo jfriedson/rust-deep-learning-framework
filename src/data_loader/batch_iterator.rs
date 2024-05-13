@@ -1,5 +1,5 @@
-use ndarray::{ArrayViewD, IxDyn};
 use ndarray::iter::AxisIter;
+use ndarray::{ArrayViewD, IxDyn};
 
 pub struct BatchIter<'a, A> {
     pub(crate) data_iter: AxisIter<'a, A, IxDyn>,
@@ -12,7 +12,7 @@ impl<'a, A> Iterator for BatchIter<'a, A> {
     fn next(&mut self) -> Option<Self::Item> {
         let mut result: Self::Item = Vec::new();
 
-        for index in 0..self.batch_size {
+        for _ in 0..self.batch_size {
             let data = self.data_iter.next();
             if data.is_none() {
                 break;

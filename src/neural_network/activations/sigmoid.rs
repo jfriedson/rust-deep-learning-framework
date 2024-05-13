@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array2, ArrayD, ArrayViewD, Axis, IxDyn};
+use ndarray::{Array1, ArrayD, ArrayViewD, Axis, IxDyn};
 
 pub struct Sigmoid {
     gradients: ArrayD<f32>,
@@ -7,7 +7,7 @@ pub struct Sigmoid {
 
 impl Sigmoid {
     pub fn new() -> Self {
-        let gradients = Array2::<f32>::zeros((0, 2)).into_dyn();
+        let gradients = Array1::<f32>::zeros(0).into_dyn();
 
         Sigmoid { gradients }
     }
@@ -34,8 +34,10 @@ impl Module for Sigmoid {
         a
     }
 
-    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
-        &loss * &self.gradients
+    fn backward(&mut self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
+        // &loss * &self.gradients
+
+        loss.to_owned()
     }
 }
 

@@ -7,5 +7,5 @@ pub trait Module {
 
     fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32>;
 
-    fn backward(&self, loss: ArrayViewD<f32>) -> ArrayD<f32>;
+    fn backward(&mut self, loss: ArrayViewD<f32>) -> ArrayD<f32>;
 }

@@ -1,5 +1,5 @@
-use ndarray::{ArrayD, Axis, IxDyn, RemoveAxis};
 use ndarray::iter::AxisIter;
+use ndarray::{ArrayD, Axis, IxDyn, RemoveAxis};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
@@ -31,7 +31,8 @@ impl<A> DataLoader<A> {
     }
 
     pub fn rand_iter(&mut self) -> RandomIter<A> {
-        let mut index_vec: Vec<usize> = (0..self.data_set.axis_iter(Axis(0)).len()).collect();
+        let vec_size = self.data_set.axis_iter(Axis(0)).len();
+        let mut index_vec: Vec<usize> = (0..vec_size).collect();
         index_vec.shuffle(&mut thread_rng());
 
         RandomIter {
