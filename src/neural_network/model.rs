@@ -39,13 +39,13 @@ impl Model {
     pub fn backward(&mut self, loss: ArrayViewD<f32>) {
         let mut next_loss = Array0::<f32>::into_dyn(Default::default());
 
-        let mut module_iter = self.modules.iter_mut();
+        let mut module_iter = self.modules.iter_mut().rev();
         if let Some(module) = module_iter.next() {
-            next_loss = module.forward(loss);
+            next_loss = module.backward(loss);
         }
 
         for module in module_iter {
-            next_loss = module.forward(next_loss.view());
+            next_loss = module.backward(next_loss.view());
         }
     }
 }

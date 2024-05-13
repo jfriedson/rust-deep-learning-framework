@@ -26,15 +26,16 @@ fn main() {
     let loss_fn = Box::new(MSE::new());
     let optimizer = Box::new(SGD::new(1e-3));
 
-    // TODO: implement a data loader
-    let training_data = array![
-        // input    output
-        [[0., 0.], [0., 0.]],
-        [[0., 1.], [1., 0.]],
-        [[1., 0.], [0., 1.]],
-        [[1., 1.], [1., 1.]],
-    ];
-    let mut data_loader = DataLoader::<f32>::from_array(training_data.into_dyn());
+    let mut data_loader = DataLoader::<f32>::from_array(
+        array![
+            // input    output
+            [[0., 0.], [0., 0.]],
+            [[0., 1.], [1., 0.]],
+            [[1., 0.], [0., 1.]],
+            [[1., 1.], [1., 1.]],
+        ]
+        .into_dyn(),
+    );
 
     let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
     trainer.train(&mut data_loader, 5);
