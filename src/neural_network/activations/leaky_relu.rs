@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array1, ArrayD, ArrayViewD, Axis, IxDyn};
+use ndarray::{Array1, ArrayD, ArrayViewD, ArrayViewMutD, Axis, IxDyn};
 
 pub struct LeakyRelu {
     negative_slope: f32,
@@ -40,9 +40,13 @@ impl Module for LeakyRelu {
     }
 
     fn backward(&mut self, loss: ArrayViewD<f32>) -> ArrayD<f32> {
-        // &loss * &self.gradients
+        &loss * &self.gradients;
 
         loss.to_owned()
+    }
+
+    fn apply_gradients(&mut self, gradient_adjuster: fn(ArrayViewMutD<f32>)) {
+        // not trainable, do nothing
     }
 }
 

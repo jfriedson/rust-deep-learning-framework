@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array1, Array2, Array3, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
+use ndarray::{Array1, Array2, Array3, ArrayD, ArrayViewD, ArrayViewMutD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
 
@@ -62,5 +62,9 @@ impl Module for Dense {
         // TODO: calculate delta
 
         Array1::<f32>::from_elem(self.biases.raw_dim(), -0.01).into_dyn()
+    }
+
+    fn apply_gradients(&mut self, gradient_adjuster: fn(ArrayViewMutD<f32>)) {
+        (gradient_adjuster)(self.deltas.view_mut().into_dyn())
     }
 }

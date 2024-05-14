@@ -35,6 +35,7 @@ impl<'a> ModelTrainer<'a> {
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();
 
+            // TODO: abstract training data iter within optimizer
             for data_sample in data_loader.rand_iter() {
                 let (training_input, output_truth) = data_sample.split_at(Axis(0), 1);
 
@@ -53,7 +54,7 @@ impl<'a> ModelTrainer<'a> {
                 self.model.backward(loss_prime.view());
 
                 // TODO: optimizer.optimize_gradients()
-                // TODO: model.apply_gradients(loss.view(), self.gradient_adjustment);
+                self.model.apply_gradients(self.optimizer.adjust_gradients);
             }
 
             let loss = losses.iter().sum::<f32>().div(losses.len() as f32);

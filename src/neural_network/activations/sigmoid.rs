@@ -1,5 +1,5 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array1, ArrayD, ArrayViewD, Axis, IxDyn};
+use ndarray::{Array1, ArrayD, ArrayViewD, ArrayViewMutD, Axis, IxDyn};
 
 pub struct Sigmoid {
     gradients: ArrayD<f32>,
@@ -38,6 +38,10 @@ impl Module for Sigmoid {
         // &loss * &self.gradients
 
         loss.to_owned()
+    }
+
+    fn apply_gradients(&mut self, gradient_adjuster: fn(ArrayViewMutD<f32>)) {
+        // not trainable, do nothing
     }
 }
 
