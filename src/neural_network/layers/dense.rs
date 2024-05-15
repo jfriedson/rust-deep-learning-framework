@@ -1,4 +1,4 @@
-use std::ops::{Sub, SubAssign};
+use std::ops::{Sub};
 use crate::neural_network::module::Module;
 use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
@@ -56,6 +56,7 @@ impl Module for Dense {
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         self.inputs.push(Axis(0), input_flattened).unwrap();
+        self.inputs = self.inputs.sum_axis(Axis(0)).insert_axis(Axis(0));
 
         self.infer(input_flattened.into_dyn())
     }
@@ -77,7 +78,6 @@ impl Module for Dense {
 
         self.weights = self.weights.clone().sub(adjustment.t());
         self.biases = self.biases.clone().sub(self.gradients.clone().remove_axis(Axis(0)));
-
 
         self.gradients = Array2::<f32>::zeros(self.gradients.raw_dim());
         self.inputs = Array2::<f32>::zeros(self.inputs.raw_dim());

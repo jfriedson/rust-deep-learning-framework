@@ -24,7 +24,7 @@ fn main() {
         .set_loss_fn(Box::new(MSE::new()))
         .build();
     let loss_fn = Box::new(MSE::new());
-    let optimizer = Box::new(SGD::new(1e-3));
+    let optimizer = Box::new(SGD::new(1.));
 
     let mut data_loader = DataLoader::<f32>::from_array(
         array![
@@ -38,7 +38,7 @@ fn main() {
     );
 
     let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
-    trainer.train(&mut data_loader, 5);
+    trainer.train(&mut data_loader, 200);
 
     for sample in data_loader.iter() {
         let input = sample.rows().into_iter().next().unwrap();
