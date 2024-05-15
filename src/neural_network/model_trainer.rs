@@ -35,25 +35,26 @@ impl<'a> ModelTrainer<'a> {
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();
 
+            // TODO: abstract training data iter within optimizer
             for data_sample in data_loader.rand_iter() {
                 let (training_input, output_truth) = data_sample.split_at(Axis(0), 1);
 
                 let output_prediction = self
                     .model
-                    .forward(training_input.remove_axis(Axis(0)).into_dyn());
+                    .forward(training_input.remove_axis(Axis(0)).into_dyn())
+                    .into_dyn();
 
                 let loss = self
                     .loss_fn
-                    .forward(&output_prediction.view().into_dyn(), &output_truth);
+                    .forward(&output_prediction.view(), &output_truth);
                 losses.push(loss.mean().unwrap());
 
                 let loss_prime = self
                     .loss_fn
-                    .backward(&output_prediction.view().into_dyn(), &output_truth);
+                    .backward(&output_prediction.view(), &output_truth);
                 self.model.backward(loss_prime.view());
 
-                // TODO: optimizer.optimize_gradients()
-                // TODO: model.apply_gradients(loss.view(), self.gradient_adjustment);
+                self.model.apply_gradients(&self.optimizer);
             }
 
             let loss = losses.iter().sum::<f32>().div(losses.len() as f32);

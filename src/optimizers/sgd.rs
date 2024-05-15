@@ -1,6 +1,7 @@
+use std::ops::MulAssign;
 use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::IxDyn;
+use ndarray::{ArrayViewMutD, IxDyn};
 
 pub struct SGD {
     learning_rate: f32,
@@ -21,21 +22,7 @@ impl Optimizer for SGD {
         }
     }
 
-    fn batch_size(&mut self) -> f32 {
-        1.
+    fn adjust_gradients(&self, mut gradients_array: ArrayViewMutD<f32>) {
+        gradients_array.mul_assign(self.learning_rate)
     }
 }
-
-// impl SGD {
-//     fn gradient_adjustment(
-//         &self,
-//         mut weights: ArrayViewMutD<f32>,
-//         mut biases: ArrayViewMutD<f32>,
-//         mut gradients: ArrayViewMutD<f32>,
-//     ) {
-//         gradients *= self.learning_rate;
-//
-//         weights *= weights.mul(&gradients);
-//         biases *= biases.mul(&gradients);
-//     }
-// }

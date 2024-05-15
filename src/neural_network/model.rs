@@ -1,5 +1,6 @@
 use crate::neural_network::module::Module;
 use ndarray::{Array0, ArrayD, ArrayViewD};
+use crate::optimizers::optimizer::Optimizer;
 
 pub struct Model {
     pub(crate) modules: Vec<Box<dyn Module>>,
@@ -46,6 +47,12 @@ impl Model {
 
         for module in module_iter {
             next_loss = module.backward(next_loss.view());
+        }
+    }
+
+    pub fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
+        for module in self.modules.iter_mut() {
+            module.apply_gradients(&optimizer);
         }
     }
 }
