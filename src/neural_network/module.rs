@@ -1,4 +1,5 @@
-use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD, IxDyn};
+use ndarray::{ArrayD, ArrayViewD, IxDyn};
+use crate::optimizers::optimizer::Optimizer;
 
 pub trait Module {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32>;
@@ -9,5 +10,5 @@ pub trait Module {
 
     fn backward(&mut self, loss: ArrayViewD<f32>) -> ArrayD<f32>;
 
-    fn apply_gradients(&mut self, gradient_adjuster: fn(ArrayViewMutD<f32>));
+    fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>);
 }

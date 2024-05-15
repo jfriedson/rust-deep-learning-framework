@@ -41,20 +41,20 @@ impl<'a> ModelTrainer<'a> {
 
                 let output_prediction = self
                     .model
-                    .forward(training_input.remove_axis(Axis(0)).into_dyn());
+                    .forward(training_input.remove_axis(Axis(0)).into_dyn())
+                    .into_dyn();
 
                 let loss = self
                     .loss_fn
-                    .forward(&output_prediction.view().into_dyn(), &output_truth);
+                    .forward(&output_prediction.view(), &output_truth);
                 losses.push(loss.mean().unwrap());
 
                 let loss_prime = self
                     .loss_fn
-                    .backward(&output_prediction.view().into_dyn(), &output_truth);
+                    .backward(&output_prediction.view(), &output_truth);
                 self.model.backward(loss_prime.view());
 
-                // TODO: optimizer.optimize_gradients()
-                self.model.apply_gradients(self.optimizer.adjust_gradients);
+                self.model.apply_gradients(&self.optimizer);
             }
 
             let loss = losses.iter().sum::<f32>().div(losses.len() as f32);
