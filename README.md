@@ -9,7 +9,7 @@ Right now, all work is done on the CPU. Now focusing on accelerating computation
 Training targets:\
 ![training target](./readme_assets/simple_example-target.png)
 
-Training results (outputs only):\
+Training results:\
 ![training result](./readme_assets/simple_example-result.png)
 
 
