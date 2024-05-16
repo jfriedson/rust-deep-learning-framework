@@ -9,7 +9,6 @@ pub struct ModelTrainer<'a> {
     model: &'a mut Model,
     loss_fn: Box<dyn LossFunction>,
     optimizer: Box<dyn Optimizer>,
-    gradients: ArrayD<f32>,
 }
 
 impl<'a> ModelTrainer<'a> {
@@ -18,13 +17,10 @@ impl<'a> ModelTrainer<'a> {
         loss_fn: Box<dyn LossFunction>,
         optimizer: Box<dyn Optimizer>,
     ) -> Self {
-        let gradients = Array1::<f32>::into_dyn(Default::default());
-
         ModelTrainer {
             model,
             loss_fn,
             optimizer,
-            gradients,
         }
     }
 

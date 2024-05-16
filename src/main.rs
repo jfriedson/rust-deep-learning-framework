@@ -21,7 +21,6 @@ fn main() {
         .add_module(Box::new(LeakyRelu::new(0.1)))
         .add_module(Box::new(Dense::new(4, 2)))
         .add_module(Box::new(Sigmoid::new()))
-        .set_loss_fn(Box::new(MSE::new()))
         .build();
     let loss_fn = Box::new(MSE::new());
     let optimizer = Box::new(SGD::new(1.));
@@ -45,6 +44,6 @@ fn main() {
 
         let output = neural_net.infer(input.into_dyn());
 
-        println!("{:?}", output);
+        println!("{}", output);
     }
 }
