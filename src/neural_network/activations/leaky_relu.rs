@@ -26,7 +26,8 @@ impl Module for LeakyRelu {
     }
 
     fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        self.gradients = ArrayD::<f32>::zeros(input_dim.clone()).insert_axis(Axis(0));
+        let gradient_shape = input_dim.clone();
+        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
 
         input_dim
     }
@@ -34,23 +35,26 @@ impl Module for LeakyRelu {
     fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         let a = self.infer(z);
 
-        let error = self.derivative(a.view());
-        self.gradients.push(Axis(0), error.view()).unwrap();
-        self.gradients = self.gradients.sum_axis(Axis(0));
+        let errors = self.derivative(a.view());
+
+        self.gradients += &errors;
 
         a
     }
 
     fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
-        let delta = &losses.remove_axis(Axis(0)) * &self.gradients.index_axis(Axis(0), 0);
-
-        self.gradients = ArrayD::<f32>::zeros(self.gradients.raw_dim()).insert_axis(Axis(0));
+        let delta = &losses * &self.gradients;
 
         delta
     }
 
-    fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
+    fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
         // not trainable, do nothing
+    }
+
+    fn zero_gradients(&mut self) {
+        let gradient_shape = self.gradients.raw_dim();
+        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
     }
 }
 

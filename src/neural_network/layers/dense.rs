@@ -10,7 +10,7 @@ pub struct Dense {
     biases: Array1<f32>,
 
     inputs: Array2<f32>,
-    gradients: Array2<f32>,
+    gradients: Array1<f32>,
 }
 
 impl Dense {
@@ -22,7 +22,7 @@ impl Dense {
         let biases = Array1::<f32>::zeros(output_count);
 
         let inputs = Array2::<f32>::zeros((0, input_count));
-        let gradients = Array2::<f32>::zeros((output_count, input_count));
+        let gradients = Array1::<f32>::zeros(output_count);
 
         Dense {
             weights,
@@ -62,24 +62,25 @@ impl Module for Dense {
     }
 
     fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
-        let losses_dim = losses.into_dimensionality::<Ix1>().unwrap().insert_axis(Axis(0));
-
-        let prev_losses = &losses_dim.dot(&self.weights);
+        let losses_dim = losses.into_dimensionality::<Ix1>().unwrap();
 
         self.gradients = losses_dim.to_owned();
 
-        prev_losses.clone().into_dyn()
+        losses_dim.dot(&self.weights).into_dyn()
     }
 
     fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
         optimizer.adjust_gradients(self.gradients.view_mut().into_dyn());
 
-        let adjustment = &self.inputs.t().dot(&self.gradients);
+        let grads_dim = self.gradients.view().insert_axis(Axis(0));
+        let adjustment = grads_dim.t().dot(&self.inputs);
 
-        self.weights = self.weights.clone().sub(adjustment.t());
-        self.biases = self.biases.clone().sub(self.gradients.clone().remove_axis(Axis(0)));
+        self.weights -= &adjustment;
+        self.biases -= &self.gradients;
+    }
 
-        self.gradients = Array2::<f32>::zeros(self.gradients.raw_dim());
+    fn zero_gradients(&mut self) {
+        self.gradients = Array1::<f32>::zeros(self.gradients.raw_dim());
         self.inputs = Array2::<f32>::zeros(self.inputs.raw_dim());
     }
 }

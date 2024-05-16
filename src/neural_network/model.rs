@@ -55,4 +55,10 @@ impl Model {
             module.apply_gradients(&optimizer);
         }
     }
+
+    pub fn zero_gradients(&mut self) {
+        for module in self.modules.iter_mut() {
+            module.zero_gradients();
+        }
+    }
 }

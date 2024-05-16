@@ -11,4 +11,6 @@ pub trait Module {
     fn backward(&mut self, loss: ArrayViewD<f32>) -> ArrayD<f32>;
 
     fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>);
+
+    fn zero_gradients(&mut self);
 }

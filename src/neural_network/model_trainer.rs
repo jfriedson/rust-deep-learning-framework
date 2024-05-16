@@ -33,12 +33,10 @@ impl<'a> ModelTrainer<'a> {
 
             // TODO: abstract training data iter within optimizer
             for data_sample in data_loader.rand_iter() {
-                let (training_input, output_truth) = data_sample.split_at(Axis(0), 1);
+                let training_input = data_sample.index_axis(Axis(0), 0).into_dyn();
+                let output_truth = data_sample.index_axis(Axis(0), 1).into_dyn();
 
-                let output_prediction = self
-                    .model
-                    .forward(training_input.remove_axis(Axis(0)).into_dyn())
-                    .into_dyn();
+                let output_prediction = self.model.forward(training_input).into_dyn();
 
                 let loss = self
                     .loss_fn
@@ -51,6 +49,8 @@ impl<'a> ModelTrainer<'a> {
                 self.model.backward(loss_prime.view());
 
                 self.model.apply_gradients(&self.optimizer);
+
+                self.model.zero_gradients();
             }
 
             let loss = losses.iter().sum::<f32>().div(losses.len() as f32);
