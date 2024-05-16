@@ -1,7 +1,7 @@
-use std::ops::MulAssign;
 use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{ArrayViewMutD, IxDyn};
+use std::ops::MulAssign;
 
 pub struct SGD {
     learning_rate: f32,

@@ -1,7 +1,5 @@
-use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model::Model;
 use crate::neural_network::module::Module;
-use crate::optimizers::optimizer::Optimizer;
 use std::mem::take;
 
 pub struct ModelBuilder {

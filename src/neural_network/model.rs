@@ -1,6 +1,6 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array0, ArrayD, ArrayViewD};
 use crate::optimizers::optimizer::Optimizer;
+use ndarray::{Array0, ArrayD, ArrayViewD};
 
 pub struct Model {
     pub(crate) modules: Vec<Box<dyn Module>>,

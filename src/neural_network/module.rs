@@ -1,5 +1,5 @@
-use ndarray::{ArrayD, ArrayViewD, IxDyn};
 use crate::optimizers::optimizer::Optimizer;
+use ndarray::{ArrayD, ArrayViewD, IxDyn};
 
 pub trait Module {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32>;

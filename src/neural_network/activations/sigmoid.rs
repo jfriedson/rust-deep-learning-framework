@@ -1,6 +1,6 @@
 use crate::neural_network::module::Module;
-use ndarray::{Array1, ArrayD, ArrayViewD, Axis, IxDyn};
 use crate::optimizers::optimizer::Optimizer;
+use ndarray::{Array1, ArrayD, ArrayViewD, IxDyn};
 
 pub struct Sigmoid {
     gradients: ArrayD<f32>,

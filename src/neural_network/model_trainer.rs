@@ -2,7 +2,7 @@ use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::loss_function::LossFunction;
 use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, ArrayD, Axis, RemoveAxis};
+use ndarray::{Axis, RemoveAxis};
 use std::ops::Div;
 
 pub struct ModelTrainer<'a> {

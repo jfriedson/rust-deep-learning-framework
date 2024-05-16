@@ -1,9 +1,8 @@
-use std::ops::{Sub};
 use crate::neural_network::module::Module;
+use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::RandomExt;
 use rand::distributions::Standard;
-use crate::optimizers::optimizer::Optimizer;
 
 pub struct Dense {
     weights: Array2<f32>,
