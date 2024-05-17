@@ -1,15 +1,18 @@
 use crate::neural_network::model::Model;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{ArrayViewMutD, IxDyn};
-use std::ops::MulAssign;
+use ndarray::{ArrayViewD, ArrayViewMutD, Axis, IxDyn};
 
 pub struct SGD {
     learning_rate: f32,
+    weight_decay: f32,
 }
 
 impl SGD {
-    pub fn new(learning_rate: f32) -> Self {
-        SGD { learning_rate }
+    pub fn new(learning_rate: f32, weight_decay: Option<f32>) -> Self {
+        SGD {
+            learning_rate,
+            weight_decay: weight_decay.unwrap_or(0.),
+        }
     }
 }
 
@@ -22,7 +25,12 @@ impl Optimizer for SGD {
         }
     }
 
-    fn adjust_gradients(&self, mut gradients_array: ArrayViewMutD<f32>) {
-        gradients_array.mul_assign(self.learning_rate)
+    fn adjust_gradients(&self, mut gradients: ArrayViewMutD<f32>, weights: ArrayViewD<f32>) {
+        if self.weight_decay != 0. {
+            let weights_square_sum = weights.mapv(|w| w.powi(2)).sum_axis(Axis(1));
+            gradients += &(self.weight_decay * &weights_square_sum);
+        }
+
+        gradients *= self.learning_rate
     }
 }

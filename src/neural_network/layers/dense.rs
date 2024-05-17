@@ -69,12 +69,12 @@ impl Module for Dense {
     }
 
     fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
-        optimizer.adjust_gradients(self.gradients.view_mut().into_dyn());
+        optimizer.adjust_gradients(self.gradients.view_mut().into_dyn(), self.weights.view().into_dyn());
 
         let grads_dim = self.gradients.view().insert_axis(Axis(0));
-        let adjustment = grads_dim.t().dot(&self.inputs);
 
-        self.weights -= &adjustment;
+        let weight_adjustment = grads_dim.t().dot(&self.inputs);
+        self.weights -= &weight_adjustment;
         self.biases -= &self.gradients;
     }
 
