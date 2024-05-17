@@ -23,7 +23,7 @@ fn main() {
         .add_module(Box::new(Sigmoid::new()))
         .build();
     let loss_fn = Box::new(MSE::new());
-    let optimizer = Box::new(SGD::new(1.));
+    let optimizer = Box::new(SGD::new(5e-2));
 
     let mut data_loader = DataLoader::<f32>::from_array(
         array![
@@ -37,7 +37,7 @@ fn main() {
     );
 
     let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
-    trainer.train(&mut data_loader, 200);
+    trainer.train(&mut data_loader, 1000);
 
     for sample in data_loader.iter() {
         let input = sample.rows().into_iter().next().unwrap();
