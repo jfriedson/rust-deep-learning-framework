@@ -6,7 +6,7 @@ use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::model_builder::ModelBuilder;
 use crate::neural_network::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
-use ndarray::array;
+use ndarray::{array, Axis};
 
 mod data_loader;
 mod loss_functions;
@@ -20,10 +20,10 @@ fn main() {
         .add_module(Box::new(Dense::new(4, 4)))
         .add_module(Box::new(LeakyRelu::new(0.1)))
         .add_module(Box::new(Dense::new(4, 2)))
-        .add_module(Box::new(Sigmoid::new()))
+        //.add_module(Box::new(Sigmoid::new()))
         .build();
     let loss_fn = Box::new(MSE::new());
-    let optimizer = Box::new(SGD::new(5e-2));
+    let optimizer = Box::new(SGD::new(1e-2, Some(1e-6)));
 
     let mut data_loader = DataLoader::<f32>::from_array(
         array![
@@ -37,13 +37,14 @@ fn main() {
     );
 
     let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
-    trainer.train(&mut data_loader, 1000);
+    trainer.train(&mut data_loader, 9999);
 
     for sample in data_loader.iter() {
-        let input = sample.rows().into_iter().next().unwrap();
+        let input = sample.index_axis(Axis(0), 0);
+        let truth = sample.index_axis(Axis(0), 1);
 
-        let output = neural_net.infer(input.into_dyn());
+        let output = neural_net.infer(input.view().into_dyn());
 
-        println!("{}", output);
+        println!("input: {} output: {} expected: {}", input, output, truth);
     }
 }
