@@ -27,8 +27,7 @@ impl Optimizer for SGD {
 
     fn adjust_gradients(&self, mut gradients: ArrayViewMutD<f32>, weights: ArrayViewD<f32>) {
         if self.weight_decay != 0. {
-            let weights_square_sum = weights.mapv(|w| w.powi(2)).sum_axis(Axis(1));
-            gradients += &(self.weight_decay * &weights_square_sum);
+            gradients += &(self.weight_decay * &weights.mean_axis(Axis(1)).unwrap());
         }
 
         gradients *= self.learning_rate
