@@ -41,7 +41,7 @@ impl<'a> ModelTrainer<'a> {
                 let loss = self
                     .loss_fn
                     .forward(&output_prediction.view(), &output_truth);
-                losses.push(loss.mean().unwrap());
+                losses.push(loss);
 
                 let loss_prime = self
                     .loss_fn
