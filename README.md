@@ -3,7 +3,7 @@ This is an effort to really learn rust and refresh my knowledge of training neur
 
 I've really enjoyed my time using Rust so far. Planning to add many more features and statistical results for common datasets.
 
-Right now, all work is done on the CPU. Now focusing on accelerating computation using OpenCL and/or Cuda.
+Currently, all work is done on the CPU. Now focused on accelerating computation using OpenCL and/or Cuda.
 
 ### Example of training
 Training targets:\
