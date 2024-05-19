@@ -2,17 +2,17 @@ use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, ArrayD, ArrayViewD, IxDyn};
 
-pub struct LeakyRelu {
+pub struct LeakyReLU {
     negative_slope: f32,
 
     gradients: ArrayD<f32>,
 }
 
-impl LeakyRelu {
+impl LeakyReLU {
     pub fn new(negative_slope: f32) -> Self {
         let gradients = Array1::<f32>::zeros(0).into_dyn();
 
-        LeakyRelu {
+        LeakyReLU {
             negative_slope,
 
             gradients,
@@ -20,7 +20,7 @@ impl LeakyRelu {
     }
 }
 
-impl Module for LeakyRelu {
+impl Module for LeakyReLU {
     fn infer(&self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         z.mapv(|el| f32::max(el, el * self.negative_slope))
     }
@@ -58,7 +58,7 @@ impl Module for LeakyRelu {
     }
 }
 
-impl LeakyRelu {
+impl LeakyReLU {
     fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
         a.mapv(|el| if el > 0. { 1. } else { self.negative_slope })
     }

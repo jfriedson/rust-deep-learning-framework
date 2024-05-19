@@ -22,16 +22,17 @@ Training results:\
 
 ### Activations
 
-- Leaky Relu
+- Leaky ReLU
 - Sigmoid
 
 ### Loss Functions
 
 - Mean Square Error
+- Mean Absolute Error
 
 ### Optimizers
 
-- SGD
+- Stochastic Gradient Descent
 - (planned) Adam
 
 
