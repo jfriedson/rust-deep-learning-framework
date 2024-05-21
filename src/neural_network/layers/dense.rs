@@ -1,8 +1,9 @@
 use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
+use ndarray_rand::rand_distr::Normal;
 use ndarray_rand::RandomExt;
-use rand::distributions::Standard;
+use rand::distributions::{Standard, Uniform};
 
 pub struct Dense {
     weights: Array2<f32>,
@@ -17,8 +18,9 @@ impl Dense {
         assert!(input_count > 0, "number of inputs must be greater than 0");
         assert!(output_count > 0, "number of outputs must be greater than 0");
 
-        let weights = Array2::<f32>::random((output_count, input_count), Standard);
-        let biases = Array1::<f32>::zeros(output_count);
+        let kaiming_variance = (2. / input_count as f32).sqrt();
+        let weights = Array2::<f32>::random((output_count, input_count), Normal::new(0., kaiming_variance).unwrap());
+        let biases = Array1::<f32>::from_elem(output_count, 0.001);
 
         let inputs = Array2::<f32>::zeros((0, input_count));
         let gradients = Array1::<f32>::zeros(output_count);
