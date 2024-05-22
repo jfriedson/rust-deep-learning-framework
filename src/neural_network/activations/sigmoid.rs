@@ -6,6 +6,7 @@ pub struct Sigmoid {
     gradients: ArrayD<f32>,
 }
 
+#[allow(unused)]
 impl Sigmoid {
     pub fn new() -> Self {
         let gradients = Array1::<f32>::zeros(0).into_dyn();
@@ -30,16 +31,13 @@ impl Module for Sigmoid {
         let a = self.infer(z);
 
         let errors = self.derivative(a.view());
-
         self.gradients += &errors;
 
         a
     }
 
     fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
-        let deltas = &losses * &self.gradients;
-
-        deltas
+        &losses * &self.gradients
     }
 
     fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
@@ -54,8 +52,6 @@ impl Module for Sigmoid {
 
 impl Sigmoid {
     fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
-        let error = a.mapv(|el| el * (1. - el));
-
-        error
+        a.mapv(|el| el * (1. - el))
     }
 }

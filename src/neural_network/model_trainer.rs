@@ -11,6 +11,7 @@ pub struct ModelTrainer<'a> {
     optimizer: Box<dyn Optimizer>,
 }
 
+#[allow(unused)]
 impl<'a> ModelTrainer<'a> {
     pub fn new(
         model: &'a mut Model,

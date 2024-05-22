@@ -13,6 +13,7 @@ pub struct Dense {
     gradients: Array1<f32>,
 }
 
+#[allow(unused)]
 impl Dense {
     pub fn new(input_count: usize, output_count: usize) -> Self {
         assert!(input_count > 0, "number of inputs must be greater than 0");

@@ -8,6 +8,7 @@ pub struct LeakyReLU {
     gradients: ArrayD<f32>,
 }
 
+#[allow(unused)]
 impl LeakyReLU {
     pub fn new(negative_slope: f32) -> Self {
         let gradients = Array1::<f32>::zeros(0).into_dyn();
@@ -36,16 +37,13 @@ impl Module for LeakyReLU {
         let a = self.infer(z);
 
         let errors = self.derivative(a.view());
-
         self.gradients += &errors;
 
         a
     }
 
     fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
-        let delta = &losses * &self.gradients;
-
-        delta
+        &losses * &self.gradients
     }
 
     fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {

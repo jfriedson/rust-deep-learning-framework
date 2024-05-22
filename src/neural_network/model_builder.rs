@@ -6,6 +6,7 @@ pub struct ModelBuilder {
     modules: Vec<Box<dyn Module>>,
 }
 
+#[allow(unused)]
 impl ModelBuilder {
     pub fn new() -> Self {
         let modules = Vec::new();

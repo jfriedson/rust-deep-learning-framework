@@ -6,6 +6,7 @@ pub struct Model {
     pub(crate) modules: Vec<Box<dyn Module>>,
 }
 
+#[allow(unused)]
 impl Model {
     pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let mut next_input = Array0::<f32>::into_dyn(Default::default());

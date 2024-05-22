@@ -3,6 +3,7 @@ use ndarray::{ArrayD, ArrayViewD};
 
 pub struct MSE {}
 
+#[allow(unused)]
 impl MSE {
     pub fn new() -> Self {
         MSE {}

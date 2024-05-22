@@ -4,6 +4,7 @@ use ndarray_rand::rand_distr::num_traits::abs;
 
 pub struct MAE {}
 
+#[allow(unused)]
 impl MAE {
     pub fn new() -> Self {
         MAE {}

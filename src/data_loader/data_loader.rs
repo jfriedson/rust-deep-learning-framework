@@ -10,6 +10,7 @@ pub struct DataLoader<A> {
     data_set: ArrayD<A>,
 }
 
+#[allow(unused)]
 impl<A> DataLoader<A> {
     pub fn from_array(array: ArrayD<A>) -> Self {
         DataLoader { data_set: array }

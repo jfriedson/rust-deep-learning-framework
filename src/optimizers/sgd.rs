@@ -7,6 +7,7 @@ pub struct SGD {
     weight_decay: f32,
 }
 
+#[allow(unused)]
 impl SGD {
     pub fn new(learning_rate: f32, weight_decay: Option<f32>) -> Self {
         SGD {
