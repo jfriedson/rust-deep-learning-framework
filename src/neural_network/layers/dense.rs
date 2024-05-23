@@ -20,7 +20,10 @@ impl Dense {
         assert!(output_count > 0, "number of outputs must be greater than 0");
 
         let kaiming_variance = (2. / input_count as f32).sqrt();
-        let weights = Array2::<f32>::random((output_count, input_count), Normal::new(0., kaiming_variance).unwrap());
+        let weights = Array2::<f32>::random(
+            (output_count, input_count),
+            Normal::new(0., kaiming_variance).unwrap(),
+        );
         let biases = Array1::<f32>::from_elem(output_count, 0.001);
 
         let inputs = Array2::<f32>::zeros((0, input_count));

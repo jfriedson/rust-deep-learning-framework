@@ -1,4 +1,5 @@
 use crate::data_loader::data_loader::DataLoader;
+use crate::loss_functions::bce::BCE;
 use crate::loss_functions::mse::MSE;
 use crate::neural_network::activations::{leaky_relu::LeakyReLU, sigmoid::Sigmoid};
 use crate::neural_network::layers::dense::Dense;
@@ -19,10 +20,10 @@ fn main() {
         .add_module(Box::new(Dense::new(4, 4)))
         .add_module(Box::new(LeakyReLU::new(0.1)))
         .add_module(Box::new(Dense::new(4, 2)))
-        //.add_module(Box::new(Sigmoid::new()))
+        .add_module(Box::new(Sigmoid::new()))
         .build();
-    let loss_fn = Box::new(MSE::new());
-    let optimizer = Box::new(SGD::new(1e-2, Some(1e-6)));
+    let loss_fn = Box::new(BCE::new());
+    let optimizer = Box::new(SGD::new(7e-2, Some(1e-4)));
 
     let mut data_loader = DataLoader::<f32>::from_array(
         array![
