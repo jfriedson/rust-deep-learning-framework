@@ -6,7 +6,7 @@ I've really enjoyed my time using Rust so far. Planning to add many more feature
 Currently, all work is done on the CPU. Now focused on accelerating computation using OpenCL and/or Cuda.
 
 ### Example of training
-Using a single hidden layer of 4 neurons, leaky ReLU activations, MSE error, and SGD.
+Using two hidden layers of 4 neurons with leaky ReLU activation, an output layer with Sigmoid activation, BCE error, and SGD optimizer.
 
 Training targets:\
 ![training target](./readme_assets/simple_example-target.png)
