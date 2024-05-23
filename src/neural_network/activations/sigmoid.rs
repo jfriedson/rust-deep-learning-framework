@@ -30,8 +30,7 @@ impl Module for Sigmoid {
     fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         let a = self.infer(z);
 
-        let errors = self.derivative(a.view());
-        self.gradients += &errors;
+        self.gradients = self.derivative(a.view());
 
         a
     }
@@ -52,6 +51,6 @@ impl Module for Sigmoid {
 
 impl Sigmoid {
     fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
-        a.mapv(|el| el * (1. - el))
+        &a * (1. - &a)
     }
 }

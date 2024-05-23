@@ -34,10 +34,9 @@ impl Module for LeakyReLU {
     }
 
     fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
-        let a = self.infer(z);
+        let a = self.infer(z.view());
 
-        let errors = self.derivative(a.view());
-        self.gradients += &errors;
+        self.gradients = self.derivative(z);
 
         a
     }

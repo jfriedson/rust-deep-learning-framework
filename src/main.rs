@@ -1,6 +1,5 @@
 use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::bce::BCE;
-use crate::loss_functions::mse::MSE;
 use crate::neural_network::activations::{leaky_relu::LeakyReLU, sigmoid::Sigmoid};
 use crate::neural_network::layers::dense::Dense;
 use crate::neural_network::model_builder::ModelBuilder;
@@ -23,7 +22,7 @@ fn main() {
         .add_module(Box::new(Sigmoid::new()))
         .build();
     let loss_fn = Box::new(BCE::new());
-    let optimizer = Box::new(SGD::new(7e-2, Some(1e-4)));
+    let optimizer = Box::new(SGD::new(1e-1, Some(1e-5)));
 
     let mut data_loader = DataLoader::<f32>::from_array(
         array![
