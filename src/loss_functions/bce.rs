@@ -21,6 +21,6 @@ impl LossFunction for BCE {
     }
 
     fn backward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> ArrayD<f32> {
-        predictions - truths
+        (predictions - truths) / (predictions * (1. - predictions))
     }
 }

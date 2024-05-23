@@ -29,6 +29,7 @@ Training results:\
 
 - Mean Square Error
 - Mean Absolute Error
+- Binary Cross Entropy
 
 ### Optimizers
 

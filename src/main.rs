@@ -23,7 +23,7 @@ fn main() {
         .add_module(Box::new(Sigmoid::new()))
         .build();
     let loss_fn = Box::new(BCE::new());
-    let optimizer = Box::new(SGD::new(1e-2, Some(1e-6)));
+    let optimizer = Box::new(SGD::new(7e-2, Some(1e-4)));
 
     let mut data_loader = DataLoader::<f32>::from_array(
         array![
