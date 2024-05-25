@@ -17,7 +17,7 @@ impl Tanh {
 
 impl Module for Tanh {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        input.mapv(|x| (2. / (1. + (-2. * x).exp())) - 1.)
+        input.mapv(|x| x.tanh())
     }
 
     fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
