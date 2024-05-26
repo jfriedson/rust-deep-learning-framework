@@ -2,35 +2,38 @@ use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::bce::BCE;
 use crate::neural_network::activations::{leaky_relu::LeakyReLU, sigmoid::Sigmoid};
 use crate::neural_network::layers::dense::Dense;
-use crate::neural_network::model_builder::ModelBuilder;
-use crate::neural_network::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
-use ndarray::{array, Axis};
+use ndarray::array;
+use crate::model::Model;
+use crate::model_trainer::ModelTrainer;
 
 mod data_loader;
 mod loss_functions;
 mod neural_network;
 mod optimizers;
+pub mod model;
+pub mod model_trainer;
 
 fn main() {
-    let mut neural_net = ModelBuilder::new()
-        .add_module(Box::new(Dense::new(2, 4)))
-        .add_module(Box::new(LeakyReLU::new(0.1)))
-        .add_module(Box::new(Dense::new(4, 4)))
-        .add_module(Box::new(LeakyReLU::new(0.1)))
-        .add_module(Box::new(Dense::new(4, 2)))
-        .add_module(Box::new(Sigmoid::new()))
-        .build();
+    let mut neural_net = Model::new();
     let loss_fn = Box::new(BCE::new());
-    let optimizer = Box::new(SGD::new(2e-1, Some(1e-5)));
+    let optimizer = Box::new(SGD::new(2e-1, Some(1e-6)));
 
-    let mut data_loader = DataLoader::<f32>::from_array(
+    let mut data_loader = DataLoader::<f32>::from_arrays(
+        // input
         array![
-            // input    output
-            [[0., 0.], [0., 0.]],
-            [[0., 1.], [1., 0.]],
-            [[1., 0.], [0., 1.]],
-            [[1., 1.], [1., 1.]],
+            [0., 0.],
+            [0., 1.],
+            [1., 0.],
+            [1., 1.],
+        ]
+        .into_dyn(),
+        // output
+        array![
+            [[1., 0.], [0., 0.]],
+            [[0., 1.], [0., 0.]],
+            [[0., 0.], [1., 0.]],
+            [[0., 0.], [0., 1.]],
         ]
         .into_dyn(),
     );
@@ -39,8 +42,8 @@ fn main() {
     trainer.train(&mut data_loader, 9999);
 
     for sample in data_loader.iter() {
-        let input = sample.index_axis(Axis(0), 0);
-        let truth = sample.index_axis(Axis(0), 1);
+        let input = sample.0;
+        let truth = sample.1;
 
         let output = neural_net.infer(input.view().into_dyn());
 

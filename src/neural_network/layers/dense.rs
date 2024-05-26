@@ -1,4 +1,3 @@
-use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
 use ndarray_rand::rand_distr::Normal;
@@ -36,28 +35,27 @@ impl Dense {
             gradients,
         }
     }
-}
 
-impl Module for Dense {
-    fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+        let orig_shape = input.raw_dim();
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
 
-        z.into_dyn()
+        z.into_shape(orig_shape).unwrap().into_dyn()
     }
 
-    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
+    pub fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
         debug_assert_eq!(
-            self.inputs.dim(),
-            Array2::<f32>::zeros((0, input_dim.size())).dim(),
+            self.inputs.raw_dim(),
+            Array2::<f32>::zeros((0, input_dim.size())).raw_dim(),
             "input array shape does not match in preparation of dense layer"
         );
 
         self.biases.raw_dim().into_dyn()
     }
 
-    fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         self.inputs.push(Axis(0), input_flattened).unwrap();
@@ -66,7 +64,7 @@ impl Module for Dense {
         self.infer(input_flattened.into_dyn())
     }
 
-    fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
         let losses_dim = losses.into_dimensionality::<Ix1>().unwrap();
 
         self.gradients = losses_dim.to_owned();
@@ -74,7 +72,7 @@ impl Module for Dense {
         losses_dim.dot(&self.weights).into_dyn()
     }
 
-    fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
+    pub fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
         optimizer.adjust_gradients(self.gradients.view_mut().into_dyn());
         self.biases -= &self.gradients;
 
@@ -87,7 +85,7 @@ impl Module for Dense {
         self.weights -= &weight_deltas;
     }
 
-    fn zero_gradients(&mut self) {
+    pub fn zero_gradients(&mut self) {
         self.gradients = Array1::<f32>::zeros(self.gradients.raw_dim());
         self.inputs = Array2::<f32>::zeros(self.inputs.raw_dim());
     }

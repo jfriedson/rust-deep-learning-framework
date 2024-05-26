@@ -1,4 +1,3 @@
-use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, ArrayD, ArrayViewD, IxDyn};
 
@@ -13,9 +12,7 @@ impl Tanh {
 
         Tanh { gradients }
     }
-}
 
-impl Module for Tanh {
     fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         input.mapv(|x| x.tanh())
     }
@@ -47,9 +44,7 @@ impl Module for Tanh {
         let gradient_shape = self.gradients.raw_dim();
         self.gradients = ArrayD::<f32>::zeros(gradient_shape);
     }
-}
 
-impl Tanh {
     fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
         a.mapv(|x| 1. - x.powi(2))
     }

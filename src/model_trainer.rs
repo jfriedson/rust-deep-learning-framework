@@ -1,6 +1,6 @@
 use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::loss_function::LossFunction;
-use crate::neural_network::model::Model;
+use crate::model::Model;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Axis, RemoveAxis};
 use std::ops::Div;
@@ -27,15 +27,14 @@ impl<'a> ModelTrainer<'a> {
 
     pub fn train(&mut self, data_loader: &mut DataLoader<f32>, epochs: usize) {
         self.optimizer
-            .prepare(self.model, data_loader.get_data_dim().remove_axis(Axis(0)));
+            .prepare(self.model, data_loader.get_input_dim().remove_axis(Axis(0)));
 
         for iteration in 0..epochs {
             let mut losses = Vec::<f32>::new();
 
-            // TODO: abstract training data iter within optimizer
             for data_sample in data_loader.rand_iter() {
-                let training_input = data_sample.index_axis(Axis(0), 0).into_dyn();
-                let output_truth = data_sample.index_axis(Axis(0), 1).into_dyn();
+                let training_input = data_sample.0;
+                let output_truth = data_sample.1;
 
                 let output_prediction = self.model.forward(training_input).into_dyn();
 

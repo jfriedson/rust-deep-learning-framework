@@ -1,4 +1,4 @@
-use crate::neural_network::model::Model;
+use crate::model::Model;
 use ndarray::{ArrayViewD, ArrayViewMutD, IxDyn};
 
 pub trait Optimizer {
