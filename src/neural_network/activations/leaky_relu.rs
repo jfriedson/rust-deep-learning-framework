@@ -1,5 +1,5 @@
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, ArrayD, ArrayViewD, IxDyn};
+use ndarray::{Array1, ArrayD, ArrayViewD};
 
 pub struct LeakyReLU {
     negative_slope: f32,
@@ -21,13 +21,6 @@ impl LeakyReLU {
 
     pub fn infer(&self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         z.mapv(|el| f32::max(el, el * self.negative_slope))
-    }
-
-    pub fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        let gradient_shape = input_dim.clone();
-        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
-
-        input_dim
     }
 
     pub fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {

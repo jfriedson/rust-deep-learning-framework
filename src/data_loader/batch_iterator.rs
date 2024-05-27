@@ -1,6 +1,6 @@
-use std::iter::Zip;
 use ndarray::iter::AxisIter;
 use ndarray::{ArrayViewD, IxDyn};
+use std::iter::Zip;
 
 pub struct BatchIter<'a, A> {
     pub(crate) data_iter: Zip<AxisIter<'a, A, IxDyn>, AxisIter<'a, A, IxDyn>>,

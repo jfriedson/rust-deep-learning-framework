@@ -15,9 +15,7 @@ impl LossFunction for BCE {
         let log_1_min_predictions = predictions.mapv(|x| (1. - x).ln());
         let log_predictions = predictions.mapv(|x| x.ln());
 
-        println!("{:?}", truths);
-        println!("{:?}", log_predictions);
-        let bce = truths * log_predictions;
+        let bce = (truths * log_predictions) + ((1. - truths) * log_1_min_predictions);
 
         -bce.mean().unwrap()
     }

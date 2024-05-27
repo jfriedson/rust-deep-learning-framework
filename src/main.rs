@@ -1,18 +1,16 @@
 use crate::data_loader::data_loader::DataLoader;
 use crate::loss_functions::bce::BCE;
-use crate::neural_network::activations::{leaky_relu::LeakyReLU, sigmoid::Sigmoid};
-use crate::neural_network::layers::dense::Dense;
-use crate::optimizers::sgd::SGD;
-use ndarray::array;
 use crate::model::Model;
 use crate::model_trainer::ModelTrainer;
+use crate::optimizers::sgd::SGD;
+use ndarray::array;
 
 mod data_loader;
 mod loss_functions;
-mod neural_network;
-mod optimizers;
 pub mod model;
 pub mod model_trainer;
+mod neural_network;
+mod optimizers;
 
 fn main() {
     let mut neural_net = Model::new();
@@ -21,19 +19,13 @@ fn main() {
 
     let mut data_loader = DataLoader::<f32>::from_arrays(
         // input
-        array![
-            [0., 0.],
-            [0., 1.],
-            [1., 0.],
-            [1., 1.],
-        ]
-        .into_dyn(),
+        array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn(),
         // output
         array![
-            [[1., 0.], [0., 0.]],
-            [[0., 1.], [0., 0.]],
-            [[0., 0.], [1., 0.]],
-            [[0., 0.], [0., 1.]],
+            [1., 0., 0., 0.],
+            [0., 1., 0., 0.],
+            [0., 0., 1., 0.],
+            [0., 0., 0., 1.],
         ]
         .into_dyn(),
     );

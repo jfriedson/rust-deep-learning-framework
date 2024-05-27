@@ -1,8 +1,7 @@
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Dimension, Ix1, IxDyn};
+use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Ix1};
 use ndarray_rand::rand_distr::Normal;
 use ndarray_rand::RandomExt;
-use rand::distributions::{Standard, Uniform};
 
 pub struct Dense {
     weights: Array2<f32>,
@@ -37,29 +36,17 @@ impl Dense {
     }
 
     pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
-        let orig_shape = input.raw_dim();
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
         let z = &self.weights.dot(&input_flattened) + &self.biases;
 
-        z.into_shape(orig_shape).unwrap().into_dyn()
-    }
-
-    pub fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        debug_assert_eq!(
-            self.inputs.raw_dim(),
-            Array2::<f32>::zeros((0, input_dim.size())).raw_dim(),
-            "input array shape does not match in preparation of dense layer"
-        );
-
-        self.biases.raw_dim().into_dyn()
+        z.into_dyn()
     }
 
     pub fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         let input_flattened = input.into_dimensionality::<Ix1>().unwrap();
 
-        self.inputs.push(Axis(0), input_flattened).unwrap();
-        self.inputs = self.inputs.sum_axis(Axis(0)).insert_axis(Axis(0));
+        self.inputs = input_flattened.insert_axis(Axis(0)).to_owned();
 
         self.infer(input_flattened.into_dyn())
     }

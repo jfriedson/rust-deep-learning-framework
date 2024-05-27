@@ -15,7 +15,11 @@ pub struct DataLoader<A> {
 #[allow(unused)]
 impl<A> DataLoader<A> {
     pub fn from_arrays(data_set_inputs: ArrayD<A>, data_set_outputs: ArrayD<A>) -> Self {
-        assert_eq!(data_set_inputs.len_of(Axis(0)), data_set_outputs.len_of(Axis(0)), "input and output sample count in data set must be equal");
+        assert_eq!(
+            data_set_inputs.len_of(Axis(0)),
+            data_set_outputs.len_of(Axis(0)),
+            "input and output sample count in data set must be equal"
+        );
 
         DataLoader {
             data_set_inputs,

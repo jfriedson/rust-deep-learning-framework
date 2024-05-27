@@ -1,5 +1,5 @@
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, ArrayD, ArrayViewD, IxDyn};
+use ndarray::{Array1, ArrayD, ArrayViewD};
 
 pub struct Sigmoid {
     gradients: ArrayD<f32>,
@@ -15,13 +15,6 @@ impl Sigmoid {
 
     pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         input.mapv(|z| 1. / (1. + (-z).exp()))
-    }
-
-    pub fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        let gradient_shape = input_dim.clone();
-        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
-
-        input_dim
     }
 
     pub fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
