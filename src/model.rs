@@ -41,6 +41,7 @@ impl Model {
     pub fn backward(&mut self, loss: ArrayViewD<f32>) {
         let a2 = self.sigmoid.backward(loss);
         let z2 = self.dense2.backward(a2.view());
+
         let a1 = self.leaky_relu.backward(z2.view());
         self.dense1.backward(a1.view());
     }

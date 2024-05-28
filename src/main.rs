@@ -17,18 +17,16 @@ fn main() {
     let loss_fn = Box::new(BCE::new());
     let optimizer = Box::new(SGD::new(2e-1, Some(1e-6)));
 
-    let mut data_loader = DataLoader::<f32>::from_arrays(
-        // input
-        array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn(),
-        // output
-        array![
-            [1., 0., 0., 0.],
-            [0., 1., 0., 0.],
-            [0., 0., 1., 0.],
-            [0., 0., 0., 1.],
-        ]
-        .into_dyn(),
-    );
+    let inputs = array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn();
+    let outputs = array![
+        [1., 0., 0., 0.],
+        [0., 1., 0., 0.],
+        [0., 0., 1., 0.],
+        [0., 0., 0., 1.],
+    ]
+    .into_dyn();
+
+    let mut data_loader = DataLoader::<f32>::from_arrays(inputs, outputs);
 
     let mut trainer = ModelTrainer::new(&mut neural_net, loss_fn, optimizer);
     trainer.train(&mut data_loader, 9999);
