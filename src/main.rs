@@ -15,6 +15,7 @@ mod optimizers;
 fn main() {
     let mut neural_net = Model::new();
     let loss_fn = Box::new(BCE::new());
+
     let optimizer = Box::new(SGD::new(2e-1, Some(1e-6)));
 
     let inputs = array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn();
