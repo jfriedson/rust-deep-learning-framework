@@ -1,5 +1,5 @@
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, ArrayD, ArrayViewD, Axis};
+use ndarray::{Array1, ArrayD, ArrayViewD, Axis, concatenate, Dimension, Ix1};
 
 pub struct Softmax {
     gradients: ArrayD<f32>,
@@ -18,10 +18,9 @@ impl Softmax {
             .iter()
             .reduce(|max: &f32, x: &f32| if (x > max) { x } else { max })
             .unwrap();
-        let diff_max = &input - *max;
-        let exp_diff_max = diff_max.mapv(|x| x.exp());
+        let exp = input.mapv(|x| (x - max).exp());
 
-        &exp_diff_max / (&exp_diff_max.sum_axis(Axis(0)))
+        &exp / (exp.sum())
     }
 
     pub fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
@@ -33,7 +32,11 @@ impl Softmax {
     }
 
     pub fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
-        &losses * &self.gradients
+        let gradients_flat = self.gradients.view().into_shape((losses.raw_dim().size(), losses.raw_dim().size())).unwrap();
+
+        let result = losses.into_dimensionality::<Ix1>().unwrap().dot(&gradients_flat);
+
+        result.into_dyn()
     }
 
     pub fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
@@ -46,6 +49,13 @@ impl Softmax {
     }
 
     pub fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
-        &a * (1. - &a)
+        let size = a.raw_dim().size();
+
+        let mut tiled = a.to_owned().insert_axis(Axis(0));
+        for i in 1..size {
+            tiled = concatenate(Axis(0), &[tiled.view(), a.view().insert_axis(Axis(0))]).unwrap();
+        }
+
+        &tiled * (ndarray::Array2::<f32>::eye(size) - tiled.t())
     }
 }

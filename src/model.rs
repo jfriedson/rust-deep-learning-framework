@@ -1,14 +1,14 @@
 use crate::neural_network::activations::leaky_relu::LeakyReLU;
-use crate::neural_network::activations::sigmoid::Sigmoid;
 use crate::neural_network::layers::dense::Dense;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{ArrayD, ArrayViewD};
+use crate::neural_network::activations::softmax::Softmax;
 
 pub struct Model {
     dense1: Dense,
     leaky_relu: LeakyReLU,
     dense2: Dense,
-    sigmoid: Sigmoid,
+    softmax: Softmax,
 }
 
 #[allow(unused)]
@@ -18,7 +18,7 @@ impl Model {
             dense1: Dense::new(2, 4),
             leaky_relu: LeakyReLU::new(0.1),
             dense2: Dense::new(4, 4),
-            sigmoid: Sigmoid::new(),
+            softmax: Softmax::new(),
         }
     }
 
@@ -27,7 +27,7 @@ impl Model {
         let a1 = self.leaky_relu.infer(z1.view());
 
         let z2 = self.dense2.infer(a1.view());
-        self.sigmoid.infer(z2.view())
+        self.softmax.infer(z2.view())
     }
 
     pub fn forward(&mut self, input: ArrayViewD<f32>) -> ArrayD<f32> {
@@ -35,11 +35,11 @@ impl Model {
         let a1 = self.leaky_relu.forward(z1.view());
 
         let z2 = self.dense2.forward(a1.view());
-        self.sigmoid.forward(z2.view())
+        self.softmax.forward(z2.view())
     }
 
     pub fn backward(&mut self, loss: ArrayViewD<f32>) {
-        let a2 = self.sigmoid.backward(loss);
+        let a2 = self.softmax.backward(loss);
         let z2 = self.dense2.backward(a2.view());
 
         let a1 = self.leaky_relu.backward(z2.view());
@@ -55,6 +55,6 @@ impl Model {
         self.dense1.zero_gradients();
         self.leaky_relu.zero_gradients();
         self.dense2.zero_gradients();
-        self.sigmoid.zero_gradients();
+        self.softmax.zero_gradients();
     }
 }
