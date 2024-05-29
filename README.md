@@ -24,6 +24,7 @@ Training results:\
 
 - Leaky ReLU
 - Sigmoid
+- Softmax
 - Tanh
 
 ### Loss Functions
