@@ -13,9 +13,9 @@ impl BCE {
 impl LossFunction for BCE {
     fn forward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> f32 {
         let log_1_min_predictions = predictions.mapv(|x| (1. - x).ln());
-        let log_predictions = predictions.mapv(|x| (x).ln());
+        let log_predictions = predictions.mapv(|x| x.ln());
 
-        let bce = (1. - truths) * log_1_min_predictions + truths * log_predictions;
+        let bce = (truths * log_predictions) + ((1. - truths) * log_1_min_predictions);
 
         -bce.mean().unwrap()
     }

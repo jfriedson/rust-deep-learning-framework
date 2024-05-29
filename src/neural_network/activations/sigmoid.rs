@@ -1,6 +1,5 @@
-use crate::neural_network::module::Module;
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, ArrayD, ArrayViewD, IxDyn};
+use ndarray::{Array1, ArrayD, ArrayViewD};
 
 pub struct Sigmoid {
     gradients: ArrayD<f32>,
@@ -13,21 +12,12 @@ impl Sigmoid {
 
         Sigmoid { gradients }
     }
-}
 
-impl Module for Sigmoid {
-    fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn infer(&self, input: ArrayViewD<f32>) -> ArrayD<f32> {
         input.mapv(|z| 1. / (1. + (-z).exp()))
     }
 
-    fn prepare(&mut self, input_dim: IxDyn) -> IxDyn {
-        let gradient_shape = input_dim.clone();
-        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
-
-        input_dim
-    }
-
-    fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         let a = self.infer(z);
 
         self.gradients = self.derivative(a.view());
@@ -35,22 +25,20 @@ impl Module for Sigmoid {
         a
     }
 
-    fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
         &losses * &self.gradients
     }
 
-    fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
+    pub fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
         // not trainable, do nothing
     }
 
-    fn zero_gradients(&mut self) {
+    pub fn zero_gradients(&mut self) {
         let gradient_shape = self.gradients.raw_dim();
         self.gradients = ArrayD::<f32>::zeros(gradient_shape);
     }
-}
 
-impl Sigmoid {
-    fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
+    pub fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
         &a * (1. - &a)
     }
 }
