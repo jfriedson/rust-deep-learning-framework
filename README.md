@@ -33,6 +33,7 @@ Training results:\
 - Mean Absolute Error
 - Binary Cross Entropy
 - Categorical Cross Entropy
+- Sparse Categorical Cross Entropy
 
 ### Optimizers
 
