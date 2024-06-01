@@ -18,7 +18,7 @@ impl LossFunction for CCE {
     fn forward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> f32 {
         let pred_log = predictions.mapv(|x| (x + self.epsilon).ln());
 
-        -(truths * pred_log).sum()
+        -(truths * pred_log).mean().unwrap()
     }
 
     fn backward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> ArrayD<f32> {
