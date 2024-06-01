@@ -3,7 +3,7 @@ use crate::model::Model;
 use crate::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
 use ndarray::array;
-use crate::loss_functions::cce::CCE;
+use crate::loss_functions::scce::SCCE;
 
 mod data_loader;
 mod loss_functions;
@@ -14,16 +14,16 @@ mod optimizers;
 
 fn main() {
     let mut neural_net = Model::new();
-    let loss_fn = Box::new(CCE::new(1e-6));
+    let loss_fn = Box::new(SCCE::new(1e-6));
 
     let optimizer = Box::new(SGD::new(1., Some(1e-6)));
 
     let inputs = array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn();
     let outputs = array![
-        [1., 0., 0., 0.],
-        [0., 1., 0., 0.],
-        [0., 0., 1., 0.],
-        [0., 0., 0., 1.],
+        [0.],
+        [1.],
+        [2.],
+        [3.],
     ]
     .into_dyn();
 
