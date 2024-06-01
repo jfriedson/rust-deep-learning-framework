@@ -20,10 +20,10 @@ fn main() {
 
     let inputs = array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn();
     let outputs = array![
-        [0.],
-        [1.],
-        [2.],
-        [3.],
+        0.,
+        1.,
+        2.,
+        3.,
     ]
     .into_dyn();
 
