@@ -1,5 +1,5 @@
 use crate::optimizers::optimizer::Optimizer;
-use ndarray::{Array1, ArrayD, ArrayViewD, Axis, concatenate, Dimension, Ix1};
+use ndarray::{concatenate, Array1, ArrayD, ArrayViewD, Axis, Dimension, Ix1};
 
 pub struct Softmax {
     gradients: ArrayD<f32>,
@@ -32,9 +32,16 @@ impl Softmax {
     }
 
     pub fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
-        let gradients_flat = self.gradients.view().into_shape((losses.raw_dim().size(), losses.raw_dim().size())).unwrap();
+        let gradients_flat = self
+            .gradients
+            .view()
+            .into_shape((losses.raw_dim().size(), losses.raw_dim().size()))
+            .unwrap();
 
-        let result = losses.into_dimensionality::<Ix1>().unwrap().dot(&gradients_flat);
+        let result = losses
+            .into_dimensionality::<Ix1>()
+            .unwrap()
+            .dot(&gradients_flat);
 
         result.into_dyn()
     }

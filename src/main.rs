@@ -1,9 +1,9 @@
 use crate::data_loader::data_loader::DataLoader;
+use crate::loss_functions::scce::SCCE;
 use crate::model::Model;
 use crate::model_trainer::ModelTrainer;
 use crate::optimizers::sgd::SGD;
 use ndarray::array;
-use crate::loss_functions::scce::SCCE;
 
 mod data_loader;
 mod loss_functions;
@@ -19,13 +19,7 @@ fn main() {
     let optimizer = Box::new(SGD::new(1., Some(1e-6)));
 
     let inputs = array![[0., 0.], [0., 1.], [1., 0.], [1., 1.]].into_dyn();
-    let outputs = array![
-        0.,
-        1.,
-        2.,
-        3.,
-    ]
-    .into_dyn();
+    let outputs = array![0., 1., 2., 3.].into_dyn();
 
     let mut data_loader = DataLoader::<f32>::from_arrays(inputs, outputs);
 

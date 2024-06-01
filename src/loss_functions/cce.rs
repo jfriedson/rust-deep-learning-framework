@@ -8,9 +8,7 @@ pub struct CCE {
 #[allow(unused)]
 impl CCE {
     pub fn new(epsilon: f32) -> Self {
-        CCE {
-            epsilon
-        }
+        CCE { epsilon }
     }
 }
 
@@ -22,6 +20,6 @@ impl LossFunction for CCE {
     }
 
     fn backward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> ArrayD<f32> {
-        -truths/(predictions + self.epsilon)
+        -truths / (predictions + self.epsilon)
     }
 }

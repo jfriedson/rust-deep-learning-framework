@@ -8,15 +8,17 @@ pub struct SCCE {
 #[allow(unused)]
 impl SCCE {
     pub fn new(epsilon: f32) -> Self {
-        SCCE {
-            epsilon,
-        }
+        SCCE { epsilon }
     }
 }
 
 impl LossFunction for SCCE {
     fn forward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> f32 {
-        let category = *truths.view().into_dimensionality::<Ix0>().unwrap().into_scalar();
+        let category = *truths
+            .view()
+            .into_dimensionality::<Ix0>()
+            .unwrap()
+            .into_scalar();
 
         -(predictions[category as usize] + self.epsilon).ln()
     }
@@ -24,9 +26,13 @@ impl LossFunction for SCCE {
     fn backward(&self, predictions: &ArrayViewD<f32>, truths: &ArrayViewD<f32>) -> ArrayD<f32> {
         let mut truths_one_hot = Array1::<f32>::zeros(predictions.raw_dim().size());
 
-        let category = *truths.view().into_dimensionality::<Ix0>().unwrap().into_scalar();
+        let category = *truths
+            .view()
+            .into_dimensionality::<Ix0>()
+            .unwrap()
+            .into_scalar();
         truths_one_hot[category as usize] = 1.;
 
-        -truths_one_hot/(predictions + self.epsilon)
+        -truths_one_hot / (predictions + self.epsilon)
     }
 }
