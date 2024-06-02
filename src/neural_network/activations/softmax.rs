@@ -1,4 +1,3 @@
-use crate::optimizers::optimizer::Optimizer;
 use ndarray::{concatenate, Array1, ArrayD, ArrayViewD, Axis, Dimension, Ix1};
 
 pub struct Softmax {
@@ -44,10 +43,6 @@ impl Softmax {
             .dot(&gradients_flat);
 
         result.into_dyn()
-    }
-
-    pub fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
-        // not trainable, do nothing
     }
 
     pub fn zero_gradients(&mut self) {

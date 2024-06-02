@@ -6,16 +6,16 @@ use std::ops::Div;
 
 pub struct ModelTrainer<'a> {
     model: &'a mut Model,
-    loss_fn: Box<dyn LossFunction>,
-    optimizer: Box<dyn Optimizer>,
+    loss_fn: &'a dyn LossFunction,
+    optimizer: &'a dyn Optimizer,
 }
 
 #[allow(unused)]
 impl<'a> ModelTrainer<'a> {
     pub fn new(
         model: &'a mut Model,
-        loss_fn: Box<dyn LossFunction>,
-        optimizer: Box<dyn Optimizer>,
+        loss_fn: &'a dyn LossFunction,
+        optimizer: &'a dyn Optimizer,
     ) -> Self {
         ModelTrainer {
             model,
@@ -44,7 +44,7 @@ impl<'a> ModelTrainer<'a> {
                     .backward(&output_prediction.view(), &output_truth);
                 self.model.backward(loss_prime.view());
 
-                self.model.apply_gradients(&self.optimizer);
+                self.model.apply_gradients(&*self.optimizer);
 
                 self.model.zero_gradients();
             }

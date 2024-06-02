@@ -1,4 +1,3 @@
-use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, ArrayD, ArrayViewD};
 
 pub struct Tanh {
@@ -27,10 +26,6 @@ impl Tanh {
 
     fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
         &losses * &self.gradients
-    }
-
-    fn apply_gradients(&mut self, _optimizer: &Box<dyn Optimizer>) {
-        // not trainable, do nothing
     }
 
     fn zero_gradients(&mut self) {

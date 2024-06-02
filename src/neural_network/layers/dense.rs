@@ -59,7 +59,7 @@ impl Dense {
         losses_dim.dot(&self.weights).into_dyn()
     }
 
-    pub fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
+    pub fn apply_gradients(&mut self, optimizer: &dyn Optimizer) {
         optimizer.adjust_gradients(self.gradients.view_mut().into_dyn());
         self.biases -= &self.gradients;
 

@@ -46,7 +46,7 @@ impl Model {
         self.dense1.backward(a1.view());
     }
 
-    pub fn apply_gradients(&mut self, optimizer: &Box<dyn Optimizer>) {
+    pub fn apply_gradients(&mut self, optimizer: &dyn Optimizer) {
         self.dense1.apply_gradients(optimizer);
         self.dense2.apply_gradients(optimizer);
     }
