@@ -7,8 +7,8 @@ use ndarray::array;
 
 mod data_loader;
 mod loss_functions;
-pub mod model;
-pub mod model_trainer;
+mod model;
+mod model_trainer;
 mod neural_network;
 mod optimizers;
 
