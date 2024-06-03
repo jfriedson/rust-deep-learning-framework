@@ -1,3 +1,5 @@
+use crate::neural_network::neural_component::NeuralComponent;
+use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, ArrayD, ArrayViewD};
 
 pub struct LeakyReLU {
@@ -18,11 +20,17 @@ impl LeakyReLU {
         }
     }
 
-    pub fn infer(&self, z: ArrayViewD<f32>) -> ArrayD<f32> {
+    fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
+        a.mapv(|el| if el > 0. { 1. } else { self.negative_slope })
+    }
+}
+
+impl NeuralComponent for LeakyReLU {
+    fn infer(&self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         z.mapv(|el| f32::max(el, el * self.negative_slope))
     }
 
-    pub fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
+    fn forward(&mut self, z: ArrayViewD<f32>) -> ArrayD<f32> {
         let a = self.infer(z.view());
 
         self.gradients = self.derivative(z);
@@ -30,16 +38,16 @@ impl LeakyReLU {
         a
     }
 
-    pub fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
+    fn backward(&mut self, losses: ArrayViewD<f32>) -> ArrayD<f32> {
         &losses * &self.gradients
     }
 
-    pub fn zero_gradients(&mut self) {
-        let gradient_shape = self.gradients.raw_dim();
-        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
+    fn apply_gradients(&mut self, _optimizer: &dyn Optimizer) {
+        // not trainable
     }
 
-    pub fn derivative(&mut self, a: ArrayViewD<f32>) -> ArrayD<f32> {
-        a.mapv(|el| if el > 0. { 1. } else { self.negative_slope })
+    fn zero_gradients(&mut self) {
+        let gradient_shape = self.gradients.raw_dim();
+        self.gradients = ArrayD::<f32>::zeros(gradient_shape);
     }
 }

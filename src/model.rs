@@ -1,6 +1,7 @@
 use crate::neural_network::activations::leaky_relu::LeakyReLU;
 use crate::neural_network::activations::softmax::Softmax;
 use crate::neural_network::layers::dense::Dense;
+use crate::neural_network::neural_component::NeuralComponent;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{ArrayD, ArrayViewD};
 
