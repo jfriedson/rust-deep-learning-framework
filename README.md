@@ -18,7 +18,10 @@ Training results:\
 ## Implemented Features
 ### Layers
 
-- Dense / Fully Connected
+- Dense / Linear / Fully Connected
+- (planned) Bilinear
+- (planned) Convolutional
+- (planned) Embedding
 
 ### Activations
 
