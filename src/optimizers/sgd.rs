@@ -28,9 +28,10 @@ impl Optimizer for SGD {
             }
             else {
                 gradient_velocities *= self.momentum;
+                gradient_velocities += &gradients;
             }
 
-            gradients += &gradient_velocities;
+            gradients.assign(&gradient_velocities);
         }
     }
 
