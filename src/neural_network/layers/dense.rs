@@ -11,7 +11,7 @@ pub struct Dense {
     inputs: Array2<f32>,
 
     gradients: Array1<f32>,
-    gradient_velocities: Array1<f32>,
+    gradient_moments: Array1<f32>,
 }
 
 #[allow(unused)]
@@ -30,14 +30,14 @@ impl Dense {
         let inputs = Array2::<f32>::zeros((0, input_count));
 
         let gradients = Array1::<f32>::zeros(output_count);
-        let gradient_velocities = Array1::<f32>::zeros(output_count);
+        let gradient_moments = Array1::<f32>::zeros(output_count);
 
         Dense {
             weights,
             biases,
             inputs,
             gradients,
-            gradient_velocities,
+            gradient_moments,
         }
     }
 }
@@ -68,7 +68,7 @@ impl NeuralComponent for Dense {
     }
 
     fn apply_gradients(&mut self, optimizer: &dyn Optimizer) {
-        optimizer.adjust_gradients(self.gradients.view_mut().into_dyn(), self.gradient_velocities.view_mut().into_dyn());
+        optimizer.adjust_gradients(self.gradients.view_mut().into_dyn(), self.gradient_moments.view_mut().into_dyn());
         self.biases -= &self.gradients;
 
         let grads_dim2 = self.gradients.view().insert_axis(Axis(0));

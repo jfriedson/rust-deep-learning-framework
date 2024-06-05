@@ -19,19 +19,19 @@ impl SGD {
 }
 
 impl Optimizer for SGD {
-    fn adjust_gradients(&self, mut gradients: ArrayViewMutD<f32>, mut gradient_velocities: ArrayViewMutD<f32>) {
+    fn adjust_gradients(&self, mut gradients: ArrayViewMutD<f32>, mut gradient_moments: ArrayViewMutD<f32>) {
         gradients *= self.learning_rate;
 
         if self.momentum != 0. {
-            if gradient_velocities.shape() != gradients.shape() {
-                gradient_velocities.assign(&gradients);
+            if gradient_moments.shape() != gradients.shape() {
+                gradient_moments.assign(&gradients);
             }
             else {
-                gradient_velocities *= self.momentum;
-                gradient_velocities += &gradients;
+                gradient_moments *= self.momentum;
+                gradient_moments += &gradients;
             }
 
-            gradients.assign(&gradient_velocities);
+            gradients.assign(&gradient_moments);
         }
     }
 
