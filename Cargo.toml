@@ -9,3 +9,4 @@ edition = "2021"
 ndarray = { version = "0.15.6", features = ["matrixmultiply-threading"] }
 ndarray-rand = "0.14.0"
 rand = "0.8.5"
+uuid = { version = "1.8.0", features = ["v4", "fast-rng"] }

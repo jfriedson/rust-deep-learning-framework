@@ -1,10 +1,15 @@
+use std::any::Any;
+use std::collections::HashMap;
 use crate::optimizers::optimizer::Optimizer;
 use ndarray::{ArrayViewD, ArrayViewMutD};
+use uuid::Uuid;
 
 pub struct SGD {
     learning_rate: f32,
     momentum: f32,
     weight_decay: f32,
+
+    state_dict: HashMap<Uuid, HashMap<String, Box<dyn Any>>>,
 }
 
 #[allow(unused)]
@@ -14,6 +19,8 @@ impl SGD {
             learning_rate,
             momentum: momentum.unwrap_or(0.),
             weight_decay: weight_decay.unwrap_or(0.),
+
+            state_dict: HashMap::new(),
         }
     }
 }

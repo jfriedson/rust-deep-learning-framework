@@ -3,8 +3,11 @@ use crate::optimizers::optimizer::Optimizer;
 use ndarray::{Array1, Array2, ArrayD, ArrayViewD, Axis, Ix1};
 use ndarray_rand::rand_distr::Normal;
 use ndarray_rand::RandomExt;
+use uuid::Uuid;
 
 pub struct Dense {
+    id: Uuid,
+
     weights: Array2<f32>,
     biases: Array1<f32>,
 
@@ -33,6 +36,7 @@ impl Dense {
         let gradient_moments = Array1::<f32>::zeros(output_count);
 
         Dense {
+            id: Uuid::new_v4(),
             weights,
             biases,
             inputs,
